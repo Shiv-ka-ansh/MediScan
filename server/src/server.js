@@ -39,10 +39,18 @@ app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
+
+        // Log origin for debugging
+        console.log(`Incoming request from origin: ${origin}`);
+
+        const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+
+        if (allowedOrigins.indexOf(origin) !== -1 || (process.env.NODE_ENV === 'development' && isLocalhost)) {
+            return callback(null, true);
+        } else {
+            console.error(`CORS Blocked: Origin ${origin} not in allowed list:`, allowedOrigins);
             return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
         }
-        return callback(null, true);
     },
     credentials: true,
 }));
