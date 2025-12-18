@@ -11,6 +11,7 @@ import net from 'net';
 import authRoutes from './routes/authRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import { listAvailableModels } from './utils/aiService.js';
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,11 @@ if (!process.env.JWT_SECRET) {
     console.warn('⚠️  Authentication will fail. Please set JWT_SECRET in server/.env');
 }
 
+if (!process.env.GEMINI_API_KEY) {
+    console.warn('⚠️  WARNING: GEMINI_API_KEY is not set!');
+    console.warn('⚠️  AI features will fail. Please set GEMINI_API_KEY in server/.env or Render dashboard');
+}
+
 // Create Express app
 const app = express();
 
@@ -32,27 +38,32 @@ const app = express();
 const allowedOrigins = [
     process.env.CLIENT_URL,
     'http://localhost:5173',
-    'http://localhost:5174'
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174'
 ].filter(Boolean);
+
+console.log('✅ Allowed Origins:', allowedOrigins);
 
 app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // Log origin for debugging
-        console.log(`Incoming request from origin: ${origin}`);
-
         const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
 
         if (allowedOrigins.indexOf(origin) !== -1 || (process.env.NODE_ENV === 'development' && isLocalhost)) {
             return callback(null, true);
         } else {
-            console.error(`CORS Blocked: Origin ${origin} not in allowed list:`, allowedOrigins);
-            return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+            console.error(`❌ CORS Blocked: Origin ${origin} not in allowed list.`);
+            // Return null, false to allow the header to be missing (which triggers browser CORS) 
+            // instead of throwing an error which might send a 500 without headers.
+            return callback(null, false);
         }
     },
     credentials: true,
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -212,10 +223,25 @@ mongoose
                 });
 
                 // Success handler
-                httpServer.once('listening', () => {
+                httpServer.once('listening', async () => {
                     const addr = httpServer.address();
                     console.log(`🚀 Server running on port ${addr.port}`);
                     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+                    
+                    // Check available Gemini models on startup
+                    if (process.env.GEMINI_API_KEY) {
+                        try {
+                            console.log('🔍 Checking available Gemini models...');
+                            const modelInfo = await listAvailableModels();
+                            if (modelInfo.models && modelInfo.models.length > 0) {
+                                console.log(`✅ Found ${modelInfo.models.length} available models`);
+                            } else {
+                                console.warn('⚠️  No models found via API listing. Will try default models.');
+                            }
+                        } catch (error) {
+                            console.warn('⚠️  Could not list models:', error.message);
+                        }
+                    }
                 });
 
                 // Set socket options for better connection handling

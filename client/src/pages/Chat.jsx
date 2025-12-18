@@ -21,6 +21,11 @@ export const Chat = () => {
       timestamp: new Date(),
     },
   ]);
+
+  // Debug: Log messages when they change
+  useEffect(() => {
+    console.log('Messages updated:', messages.length, messages);
+  }, [messages]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -46,17 +51,29 @@ export const Chat = () => {
 
     try {
       const response = await chatWithAI(input);
+      console.log('Chat response received:', response);
+      
+      // Ensure we have a valid response
+      if (!response || !response.message) {
+        console.error('Invalid response format:', response);
+        throw new Error('Invalid response from server');
+      }
+      
       const aiMessage = {
         role: "ai",
         content: response.message,
-        timestamp: new Date(response.timestamp),
+        timestamp: response.timestamp ? new Date(response.timestamp) : new Date(),
       };
+      
+      console.log('Adding AI message:', aiMessage);
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
+      console.error('Chat error:', error);
+      const errorDetails = error.response?.data?.message || error.message || 'Unknown error';
       const errorMessage = {
         role: "ai",
         content:
-          "I apologize, but I encountered a neural synchronization error. Could you please rephrase your query?",
+          `I apologize, but I encountered an error: ${errorDetails}. Please check your API configuration or try again later.`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -98,9 +115,9 @@ export const Chat = () => {
         <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth custom-scrollbar">
           {messages.map((message, index) => (
             <div
-              key={index}
+              key={`message-${index}-${message.timestamp?.getTime() || Date.now()}`}
               className={cn(
-                "flex opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-forwards",
+                "flex opacity-100 transition-opacity duration-300",
                 message.role === "user" ? "justify-end" : "justify-start"
               )}
             >

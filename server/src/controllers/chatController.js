@@ -47,8 +47,14 @@ export const chat = async (req, res) => {
             timestamp: new Date(),
         });
     } catch (error) {
-        res.status(500).json({
-            message: error.message || 'Failed to get AI response',
+        console.error('Chat controller error:', error);
+        // Provide more detailed error information
+        const errorMessage = error.message || 'Failed to get AI response';
+        const statusCode = error.status || 500;
+        
+        res.status(statusCode).json({
+            message: errorMessage,
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         });
     }
 };

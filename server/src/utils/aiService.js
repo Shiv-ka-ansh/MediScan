@@ -1,21 +1,141 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Initialize Gemini AI
+const genAI = process.env.GEMINI_API_KEY
+    ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+    : null;
+
+// Prefer configurable model; fall back to supported defaults
+// Try newer models first, then fallback to older ones
+// Note: Model availability varies by region and API version
+const MODEL_OPTIONS = [
+    'gemini-1.5-flash-002',       // Most common working version
+    'gemini-1.5-pro-002',         // Most common pro version
+    'gemini-1.5-flash',           // Without version suffix
+    'gemini-1.5-pro',             // Without version suffix
+    'gemini-2.5-flash',           // Latest fast model (2025)
+    'gemini-2.5-pro',             // Latest pro model (2025)
+    'gemini-1.5-flash-latest',    // Latest 1.5 flash
+    'gemini-1.5-pro-latest',      // Latest 1.5 pro
+    'gemini-pro'                  // Legacy fallback
+];
+
+const DEFAULT_GEMINI_MODEL = MODEL_OPTIONS[0];
+const modelName = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
+
 /**
  * AI Service for analyzing medical reports
- * Uses OpenAI API to generate summaries and insights
+ * Uses Google Gemini API to generate summaries and insights
  */
 
 /**
+ * List available models (for debugging)
+ * Tries both v1 and v1beta API versions
+ */
+export async function listAvailableModels() {
+    if (!genAI) {
+        throw new Error('GEMINI_API_KEY is not configured.');
+    }
+    
+    const apiKey = process.env.GEMINI_API_KEY;
+    const apiVersions = ['v1', 'v1beta'];
+    
+    for (const version of apiVersions) {
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/${version}/models?key=${apiKey}`);
+            if (!response.ok) continue;
+            
+            const data = await response.json();
+            
+            if (data.models) {
+                const availableModels = data.models
+                    .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+                    .map(m => m.name.replace('models/', ''));
+                console.log(`Available models (${version}):`, availableModels);
+                return { version, models: availableModels };
+            }
+        } catch (error) {
+            // Try next version
+            continue;
+        }
+    }
+    
+    console.warn('Could not list models from API. Will try default model options.');
+    return { version: null, models: [] };
+}
+
+/**
+ * Helper function to generate content with automatic model fallback
+ * Tries multiple models in order until one works
+ */
+async function generateContentWithFallback(prompt, preferredModel = modelName) {
+    const modelsToTry = preferredModel === modelName 
+        ? [preferredModel, ...MODEL_OPTIONS.filter(m => m !== preferredModel)]
+        : [preferredModel, ...MODEL_OPTIONS];
+    
+    let lastError = null;
+    const failedModels = [];
+    
+    for (const modelNameToTry of modelsToTry) {
+        try {
+            const model = genAI.getGenerativeModel({ model: modelNameToTry });
+            const result = await model.generateContent(prompt);
+            if (modelNameToTry !== preferredModel) {
+                console.log(`✓ Successfully using model: ${modelNameToTry}`);
+            }
+            return result;
+        } catch (error) {
+            lastError = error;
+            failedModels.push(modelNameToTry);
+            
+            // Check if it's a 404 or model not found error
+            const is404Error = error.status === 404 || 
+                             error.message?.includes('404') || 
+                             error.message?.includes('not found') ||
+                             error.message?.includes('is not found');
+            
+            if (is404Error) {
+                console.warn(`Model ${modelNameToTry} not available (404), trying next...`);
+                continue;
+            }
+            
+            // For other errors (auth, rate limit, etc), throw immediately
+            console.error(`Model ${modelNameToTry} error:`, error.message);
+            throw error;
+        }
+    }
+    
+    // If all models failed with 404, provide helpful error message
+    console.error(`All ${failedModels.length} model options failed with 404:`);
+    failedModels.forEach(m => console.error(`  - ${m}`));
+    
+    throw new Error(
+        `No available Gemini models found. Tried: ${failedModels.join(', ')}. ` +
+        `Please check your GEMINI_API_KEY and ensure you have access to at least one model. ` +
+        `You can set GEMINI_MODEL environment variable to specify a model name.`
+    );
+}
+
+/**
  * Analyzes medical report text and returns AI-generated insights
- * @param text - Extracted text from medical report
- * @returns AI analysis with summary, abnormalities, recommendations, and plain English explanation
  */
 export async function analyzeReport(text) {
-    const prompt = `You are a medical AI assistant. Analyze this medical report and provide:
+    if (!genAI) {
+        throw new Error('GEMINI_API_KEY is not configured on the server. Please add it to your .env file.');
+    }
+
+    try {
+
+        const prompt = `You are a medical AI assistant. Analyze this medical report and provide:
 1. A concise summary (2-3 sentences)
 2. List of abnormal values or findings (bullet points)
 3. Recommendations (bullet points)
 4. Plain English explanation for a non-medical person (2-3 sentences)
 
-Format your response as JSON:
+Format your response as a valid JSON object with the following keys:
 {
   "summary": "...",
   "abnormalities": ["...", "..."],
@@ -26,96 +146,59 @@ Format your response as JSON:
 Medical Report:
 ${text}`;
 
-    try {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [{ role: 'user', content: prompt }],
-                temperature: 0.3,
-            }),
-        });
+        const result = await generateContentWithFallback(prompt);
+        const response = await result.response;
+        const textResponse = response.text();
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('OpenAI Error Details:', errorText);
-            throw new Error(`OpenAI API error: ${res.statusText} (${res.status}) - ${errorText}`);
-        }
+        // Clean up markdown code blocks if present
+        const cleanedText = textResponse.replace(/^```json\n/, '').replace(/\n```$/, '').trim();
 
-        const data = await res.json();
-        const content = data.choices?.[0]?.message?.content || '';
-
-        // Try to parse JSON response
         try {
-            const parsed = JSON.parse(content);
+            return JSON.parse(cleanedText);
+        } catch (e) {
+            console.warn('JSON Parse Error, returning raw text as summary:', e);
             return {
-                summary: parsed.summary || 'No summary available.',
-                abnormalities: parsed.abnormalities || [],
-                recommendations: parsed.recommendations || [],
-                plainEnglish: parsed.plainEnglish || 'Unable to generate explanation.',
-            };
-        } catch {
-            // Fallback if JSON parsing fails
-            return {
-                summary: content || 'No summary generated.',
+                summary: textResponse.substring(0, 300),
                 abnormalities: [],
                 recommendations: [],
-                plainEnglish: content || 'Unable to generate explanation.',
+                plainEnglish: 'Could not parse JSON. Raw response: ' + textResponse
             };
         }
     } catch (error) {
-        console.error('AI Service Error:', error);
-        throw new Error('Failed to analyze report with AI');
+        console.error('Gemini Analysis Error:', error.message);
+        // Log more details if it's a fetch error (404, 403 etc)
+        if (error.status) {
+            console.error(`Status: ${error.status}, StatusText: ${error.statusText}`);
+        }
+        throw new Error(`AI Analysis failed: ${error.message}`);
     }
 }
 
 /**
  * Chat with AI about user's medical reports
- * @param message - User's message/question
- * @param reportContext - Context from user's reports
- * @returns AI response
  */
-export async function chatWithAI(
-    message,
-    reportContext
-) {
-    const systemPrompt = `You are a helpful medical AI assistant. Answer questions about medical reports in a clear, empathetic, and non-alarming way. Always remind users to consult with healthcare professionals for medical advice.`;
-
-    const userPrompt = reportContext
-        ? `Context from user's medical reports:\n${reportContext}\n\nUser question: ${message}`
-        : `User question: ${message}`;
+export async function chatWithAI(message, reportContext) {
+    if (!genAI) {
+        throw new Error('GEMINI_API_KEY is not configured on the server.');
+    }
 
     try {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userPrompt },
-                ],
-                temperature: 0.7,
-            }),
-        });
+        const systemPrompt = `You are a helpful medical AI assistant. Answer questions about medical reports in a clear, empathetic, and non-alarming way. Always remind users to consult with healthcare professionals for medical advice.`;
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('OpenAI Chat API Error Details:', errorText);
-            throw new Error(`OpenAI API error: ${res.statusText} (${res.status}) - ${errorText}`);
-        }
+        const fullPrompt = `${systemPrompt}
 
-        const data = await res.json();
-        return data.choices?.[0]?.message?.content || 'Unable to generate response.';
+${reportContext ? `Context from user's medical reports:\n${reportContext}` : 'The user has no reports yet.'}
+
+User question: ${message}`;
+
+        const result = await generateContentWithFallback(fullPrompt);
+        const response = await result.response;
+        return response.text();
     } catch (error) {
-        console.error('AI Chat Error:', error);
-        throw new Error('Failed to get AI response');
+        console.error('Gemini Chat Error:', error.message);
+        if (error.status) {
+            console.error(`Status: ${error.status}, StatusText: ${error.statusText}`);
+        }
+        throw new Error(`AI Chat failed: ${error.message}`);
     }
 }

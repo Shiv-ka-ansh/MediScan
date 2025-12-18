@@ -22,7 +22,12 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="min-h-screen premium-bg">
-          <Snowfall color="#82C3D9"/>
+          <Snowfall
+            color="#82C3D9"
+            snowflakeCount={150}
+            speed={[0.5, 4.0]}
+            wind={[-0.5, 2.0]}
+          />
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
