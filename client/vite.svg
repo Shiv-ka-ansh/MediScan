@@ -1,0 +1,4 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#202020" />
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#61dafb" font-family="Arial, Helvetica, sans-serif" font-size="24">Vite</text>
+</svg>
