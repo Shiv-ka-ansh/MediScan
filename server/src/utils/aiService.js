@@ -9,21 +9,20 @@ const genAI = process.env.GEMINI_API_KEY
     : null;
 
 // Prefer configurable model; fall back to supported defaults
-// Try newer models first, then fallback to older ones
-// Note: Model availability varies by region and API version
+// Prioritize FREE/CHEAPEST models first (Flash models are free tier friendly)
+// Note: Flash models are faster and cheaper than Pro models
 const MODEL_OPTIONS = [
-    'gemini-1.5-flash-002',       // Most common working version
-    'gemini-1.5-pro-002',         // Most common pro version
-    'gemini-1.5-flash',           // Without version suffix
-    'gemini-1.5-pro',             // Without version suffix
-    'gemini-2.5-flash',           // Latest fast model (2025)
-    'gemini-2.5-pro',             // Latest pro model (2025)
-    'gemini-1.5-flash-latest',    // Latest 1.5 flash
-    'gemini-1.5-pro-latest',      // Latest 1.5 pro
+    'gemini-1.5-flash',           // FREE TIER - Cheapest, fastest, most common
+    'gemini-1.5-flash-002',       // FREE TIER - Specific version of flash
+    'gemini-2.5-flash',           // FREE TIER - Latest flash model (2025)
+    'gemini-1.5-flash-latest',    // FREE TIER - Latest 1.5 flash
+    'gemini-1.5-pro',             // FREE TIER (limited) - Pro version
+    'gemini-1.5-pro-002',         // FREE TIER (limited) - Pro specific version
     'gemini-pro'                  // Legacy fallback
 ];
 
-const DEFAULT_GEMINI_MODEL = MODEL_OPTIONS[0];
+// Default to the cheapest/free model (gemini-1.5-flash)
+const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash';
 const modelName = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
 
 /**
