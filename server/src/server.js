@@ -29,8 +29,21 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    'http://localhost:5173',
+    'http://localhost:5174'
+].filter(Boolean);
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+        }
+        return callback(null, true);
+    },
     credentials: true,
 }));
 app.use(express.json());
@@ -138,7 +151,7 @@ mongoose
 
         // Start server
         const PORT = parseInt(process.env.PORT || 8000);
-        
+
         // Function to start server with proper port handling
         const startServer = async () => {
             // Close previous server instance if it exists
@@ -162,7 +175,7 @@ mongoose
             // Wait for port to become available (up to 10 seconds)
             console.log(`🔍 Checking if port ${PORT} is available...`);
             const portAvailable = await waitForPort(PORT, 10000, 500);
-            
+
             if (!portAvailable) {
                 console.error(`❌ Port ${PORT} is still in use after waiting!`);
                 console.error(`💡 Solutions:`);
@@ -176,7 +189,7 @@ mongoose
             try {
                 // Create HTTP server
                 const httpServer = http.createServer(app);
-                
+
                 // Attach error handler BEFORE listening
                 httpServer.on('error', (error) => {
                     if (error.code === 'EADDRINUSE') {

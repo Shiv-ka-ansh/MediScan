@@ -16,11 +16,13 @@ import { ReportDetail } from "./pages/ReportDetail";
 import { Chat } from "./pages/Chat";
 import { DoctorPanel } from "./pages/DoctorPanel";
 
+import Snowfall from "react-snowfall";
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen premium-bg">
+          <Snowfall color="#82C3D9"/>
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
