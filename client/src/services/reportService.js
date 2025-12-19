@@ -60,3 +60,11 @@ export const reviewReport = async (
 export const deleteReport = async (id) => {
     await api.delete(`/reports/${id}`);
 };
+
+/**
+ * Get reviewed reports (for doctors - history)
+ */
+export const getReviewedReports = async () => {
+    const response = await api.get('/reports/reviewed');
+    return response.data;
+};

@@ -252,3 +252,20 @@ export const deleteReport = async (
         res.status(500).json({ message: error.message || 'Failed to delete report' });
     }
 };
+
+/**
+ * Get reports reviewed by current doctor
+ * GET /api/reports/reviewed
+ */
+export const getReviewedReports = async (req, res) => {
+    try {
+        const reports = await Report.find({ reviewedBy: req.user._id })
+            .populate('userId', 'name email')
+            .sort({ reviewedAt: -1 })
+            .select('-extractedText');
+
+        res.json({ reports });
+    } catch (error) {
+        res.status(500).json({ message: error.message || 'Failed to get reviewed reports' });
+    }
+};

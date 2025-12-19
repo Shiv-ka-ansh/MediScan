@@ -11,7 +11,10 @@ import net from 'net';
 import authRoutes from './routes/authRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { listAvailableModels } from './utils/aiService.js';
+import { initSocketServer } from './utils/socketService.js';
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -81,6 +84,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -227,7 +232,11 @@ mongoose
                     const addr = httpServer.address();
                     console.log(`🚀 Server running on port ${addr.port}`);
                     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-                    
+
+                    // Initialize Socket.io
+                    initSocketServer(httpServer);
+                    console.log('🔌 Socket.io initialized');
+
                     // Check available Gemini models on startup
                     if (process.env.GEMINI_API_KEY) {
                         try {

@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./Button";
+import { NotificationBell } from "./NotificationBell";
 import {
   LogOut,
   User,
   FileText,
   MessageSquare,
-  Shield,
+  Bell,
   Activity,
+  UserCircle,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -62,10 +64,18 @@ export const Navbar = () => {
 
             {user ? (
               <div className="flex items-center space-x-4">
+                <NotificationBell />
                 <span className="text-slate-400 text-sm hidden lg:block">
                   Logged in as{" "}
                   <span className="text-white font-medium">{user.name}</span>
                 </span>
+                <Link
+                  to="/profile"
+                  className="p-2 text-slate-400 hover:text-white transition-colors flex items-center space-x-2 mr-2"
+                >
+                  <UserCircle size={18} className="text-cyan-400" />
+                  <span className="text-sm hidden lg:inline">{user?.name}</span>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"

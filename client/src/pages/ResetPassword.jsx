@@ -1,65 +1,95 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { login } from "../services/authService";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
-import { Activity, Mail, Lock, LogIn, ArrowLeft, Loader2 } from "lucide-react";
+import { Activity, Lock, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
+import api from "../services/api";
 
-export const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { setUser } = useAuth();
+export const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const token = searchParams.get("token");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const data = await login(formData.email, formData.password);
-      // Store token and user in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
-      navigate("/dashboard");
+      await api.post("/auth/reset-password", { token, password });
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
-      console.error("Login error:", err);
-      // Handle different error types
-      if (err.response) {
-        // Server responded with error status
-        setError(
-          err.response.data?.message ||
-            "Login failed. Please check your credentials."
-        );
-      } else if (err.request) {
-        // Request was made but no response received
-        setError(
-          "Cannot connect to server. Please check if the server is running."
-        );
-      } else {
-        // Something else happened
-        setError(err.message || "Login failed. Please try again.");
-      }
+      setError(err.response?.data?.message || "Failed to reset password");
     } finally {
       setLoading(false);
     }
   };
 
+  if (!token) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
+        <div className="glass-card p-10 text-center max-w-md">
+          <h2 className="text-2xl font-outfit font-bold text-white mb-4">
+            Invalid Reset Link
+          </h2>
+          <p className="text-slate-400 mb-6">
+            This password reset link is invalid or has expired.
+          </p>
+          <Link to="/forgot-password">
+            <Button className="btn-gradient">Request New Link</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
+        <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-700">
+          <div className="glass-card p-10 text-center">
+            <div className="w-16 h-16 bg-emerald-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="text-emerald-400" size={32} />
+            </div>
+            <h2 className="text-2xl font-outfit font-bold text-white mb-2">
+              Password Reset Successful
+            </h2>
+            <p className="text-slate-400 mb-6">Redirecting you to login...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-700">
         <Link
-          to="/"
+          to="/login"
           className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
         >
-          <ArrowLeft className="mr-2" size={18} /> Home
+          <ArrowLeft className="mr-2" size={18} /> Back to Login
         </Link>
 
         <div className="glass-card p-10 relative overflow-hidden">
-          {/* Subtle Glow */}
           <div className="absolute -top-24 -left-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl opacity-50" />
 
           <div className="relative">
@@ -68,10 +98,10 @@ export const Login = () => {
                 <Activity className="text-white" size={32} />
               </div>
               <h1 className="text-3xl font-outfit font-bold text-white">
-                Neural Secure
+                New Password
               </h1>
               <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">
-                Access Health Console
+                Set New Credentials
               </p>
             </div>
 
@@ -83,20 +113,18 @@ export const Login = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="relative group">
-                <Mail
+                <Lock
                   className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10"
                   size={18}
                 />
                 <Input
-                  label="Email Address"
-                  type="email"
+                  label="New Password"
+                  type="password"
                   className="pl-12"
-                  placeholder="name@example.com"
+                  placeholder="••••••••"
                   required
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
@@ -106,15 +134,13 @@ export const Login = () => {
                   size={18}
                 />
                 <Input
-                  label="Network Key (Password)"
+                  label="Confirm Password"
                   type="password"
                   className="pl-12"
                   placeholder="••••••••"
                   required
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
 
@@ -126,30 +152,10 @@ export const Login = () => {
                 {loading ? (
                   <Loader2 className="animate-spin h-6 w-6" />
                 ) : (
-                  <>
-                    Sign In & Synchronize <LogIn className="ml-2" size={18} />
-                  </>
+                  "Reset Password"
                 )}
               </Button>
             </form>
-
-            <div className="mt-8 text-center border-t border-white/5 pt-6 space-y-4">
-              <Link
-                to="/forgot-password"
-                className="block text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
-              >
-                Forgot your password?
-              </Link>
-              <p className="text-slate-400 text-sm">
-                No active neural link?{" "}
-                <Link
-                  to="/register"
-                  className="text-cyan-400 hover:text-cyan-300 font-bold decoration-cyan-400/30 underline-offset-4 hover:underline transition-all"
-                >
-                  Create Identity
-                </Link>
-              </p>
-            </div>
           </div>
         </div>
       </div>

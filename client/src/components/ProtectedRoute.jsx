@@ -16,6 +16,15 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
+  if (
+    user &&
+    user.role === "patient" &&
+    !user.isProfileComplete &&
+    window.location.pathname !== "/profile"
+  ) {
+    return <Navigate to="/profile" replace />;
+  }
+
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }

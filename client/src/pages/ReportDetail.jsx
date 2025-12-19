@@ -42,11 +42,99 @@ export const ReportDetail = () => {
     if (!report) return;
 
     const doc = new jsPDF();
-    // (PDF logic remains similar but could be enhanced later)
+    const margin = 20;
+    let y = 30;
+
+    // Header
     doc.setFontSize(22);
-    doc.text("MediScan AI Analysis Report", 20, 20);
-    // ... logic ...
-    doc.save(`${report.fileName}-analysis.pdf`);
+    doc.setTextColor(34, 211, 238); // Cyan-400
+    doc.text("MedScan AI Analysis Report", margin, y);
+    y += 15;
+
+    // File Info
+    doc.setFontSize(12);
+    doc.setTextColor(100, 116, 139); // Slate-500
+    doc.text(`Report: ${report.fileName}`, margin, y);
+    y += 7;
+    doc.text(
+      `Date: ${new Date(report.createdAt).toLocaleDateString()}`,
+      margin,
+      y
+    );
+    y += 7;
+    doc.text(
+      `Reviewer: ${report.reviewedBy?.name || "AI Neural Engine"}`,
+      margin,
+      y
+    );
+    y += 15;
+
+    // AI Summary
+    doc.setFontSize(16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(15, 23, 42); // slate-900
+    doc.rect(margin, y - 5, 170, 10, "F");
+    doc.text("Clinical Abstract", margin + 2, y + 2);
+    y += 15;
+
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85); // Slate-800
+    const summaryLines = doc.splitTextToSize(
+      report.aiSummary || "No summary available.",
+      170
+    );
+    doc.text(summaryLines, margin, y);
+    y += summaryLines.length * 7 + 10;
+
+    // Abnormalities
+    doc.setFontSize(16);
+    doc.setTextColor(225, 29, 72); // Rose-600
+    doc.text("Neural Observations", margin, y);
+    y += 10;
+
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85);
+    const abnormalities = report.aiAnalysis?.abnormalities || [];
+    if (abnormalities.length > 0) {
+      abnormalities.forEach((item) => {
+        const itemLines = doc.splitTextToSize(`• ${item}`, 170);
+        doc.text(itemLines, margin, y);
+        y += itemLines.length * 7;
+      });
+    } else {
+      doc.text("• No abnormalities detected.", margin, y);
+      y += 10;
+    }
+    y += 10;
+
+    // Recommendations
+    doc.setFontSize(16);
+    doc.setTextColor(2, 132, 199); // blue-600
+    doc.text("Medical Recommendations", margin, y);
+    y += 10;
+
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85);
+    const recommendations = report.aiAnalysis?.recommendations || [];
+    recommendations.forEach((rec) => {
+      const recLines = doc.splitTextToSize(`• ${rec}`, 170);
+      doc.text(recLines, margin, y);
+      y += recLines.length * 7;
+    });
+    y += 15;
+
+    // Doctor Comments
+    if (report.doctorComments) {
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Specialist Verification", margin, y);
+      y += 10;
+      doc.setFontSize(12);
+      const commentLines = doc.splitTextToSize(report.doctorComments, 170);
+      doc.text(commentLines, margin, y);
+    }
+
+    doc.save(`MedScan-${report.fileName.split(".")[0]}.pdf`);
   };
 
   if (loading)

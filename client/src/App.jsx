@@ -10,11 +10,14 @@ import { Navbar } from "./components/Navbar";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import { Dashboard } from "./pages/Dashboard";
 import { Upload } from "./pages/Upload";
 import { ReportDetail } from "./pages/ReportDetail";
 import { Chat } from "./pages/Chat";
 import { DoctorPanel } from "./pages/DoctorPanel";
+import { Profile } from "./pages/Profile";
 
 import Snowfall from "react-snowfall";
 function App() {
@@ -25,7 +28,7 @@ function App() {
           <Snowfall
             color="#82C3D9"
             snowflakeCount={150}
-            speed={[0.5, 4.0]}
+            speed={[0.2, 1.0]}
             wind={[-0.5, 2.0]}
           />
           <Navbar />
@@ -33,6 +36,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/dashboard"
               element={
@@ -74,6 +79,14 @@ function App() {
               }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>

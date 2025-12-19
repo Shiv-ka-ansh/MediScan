@@ -24,7 +24,7 @@ export const Chat = () => {
 
   // Debug: Log messages when they change
   useEffect(() => {
-    console.log('Messages updated:', messages.length, messages);
+    console.log("Messages updated:", messages.length, messages);
   }, [messages]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,29 +51,31 @@ export const Chat = () => {
 
     try {
       const response = await chatWithAI(input);
-      console.log('Chat response received:', response);
-      
+      console.log("Chat response received:", response);
+
       // Ensure we have a valid response
       if (!response || !response.message) {
-        console.error('Invalid response format:', response);
-        throw new Error('Invalid response from server');
+        console.error("Invalid response format:", response);
+        throw new Error("Invalid response from server");
       }
-      
+
       const aiMessage = {
         role: "ai",
         content: response.message,
-        timestamp: response.timestamp ? new Date(response.timestamp) : new Date(),
+        timestamp: response.timestamp
+          ? new Date(response.timestamp)
+          : new Date(),
       };
-      
-      console.log('Adding AI message:', aiMessage);
+
+      console.log("Adding AI message:", aiMessage);
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
-      const errorDetails = error.response?.data?.message || error.message || 'Unknown error';
+      console.error("Chat error:", error);
+      const errorDetails =
+        error.response?.data?.message || error.message || "Unknown error";
       const errorMessage = {
         role: "ai",
-        content:
-          `I apologize, but I encountered an error: ${errorDetails}. Please check your API configuration or try again later.`,
+        content: `I apologize, but I encountered an error: ${errorDetails}. Please check your API configuration or try again later.`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -115,7 +117,9 @@ export const Chat = () => {
         <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth custom-scrollbar">
           {messages.map((message, index) => (
             <div
-              key={`message-${index}-${message.timestamp?.getTime() || Date.now()}`}
+              key={`message-${index}-${
+                message.timestamp?.getTime() || Date.now()
+              }`}
               className={cn(
                 "flex opacity-100 transition-opacity duration-300",
                 message.role === "user" ? "justify-end" : "justify-start"
@@ -192,7 +196,18 @@ export const Chat = () => {
             <div className="flex space-x-2">
               <button
                 type="button"
+                onClick={() => {
+                  setMessages([
+                    {
+                      role: "ai",
+                      content:
+                        "Hello! I'm your MediScan AI health assistant. I've analyzed your medical data and I'm ready to answer any questions about your results or general health concerns. How can I help you today?",
+                      timestamp: new Date(),
+                    },
+                  ]);
+                }}
                 className="p-2 text-slate-500 hover:text-white transition-colors"
+                title="New Chat"
               >
                 <PlusCircle size={24} />
               </button>

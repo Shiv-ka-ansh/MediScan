@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getUserReports } from "../services/reportService";
 import { Button } from "../components/Button";
+import { cn } from "../lib/utils";
 import {
   Plus,
   FileText,
@@ -15,6 +16,7 @@ import {
   LayoutDashboard,
   Filter,
   Download,
+  UserCircle,
 } from "lucide-react";
 import { Input } from "../components/Input";
 
@@ -90,12 +92,23 @@ export const Dashboard = () => {
             Monitor your medical history and AI insights.
           </p>
         </div>
-        <Link to="/upload">
-          <Button className="btn-gradient px-8 py-3">
-            <Plus size={20} className="mr-2" />
-            New Report
-          </Button>
-        </Link>
+        <div className="flex space-x-3">
+          <Link to="/profile">
+            <Button
+              variant="outline"
+              className="px-8 py-3 border-white/10 hover:bg-white/5"
+            >
+              <UserCircle size={20} className="mr-2" />
+              Edit Profile
+            </Button>
+          </Link>
+          <Link to="/upload">
+            <Button className="btn-gradient px-8 py-3">
+              <Plus size={20} className="mr-2" />
+              New Report
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}

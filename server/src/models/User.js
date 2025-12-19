@@ -32,6 +32,39 @@ const UserSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        verificationToken: {
+            type: String,
+        },
+        resetPasswordToken: {
+            type: String,
+        },
+        resetPasswordExpires: {
+            type: Date,
+        },
+        phone: {
+            type: String,
+            trim: true,
+        },
+        dateOfBirth: {
+            type: Date,
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other', ''],
+            default: '',
+        },
+        bloodGroup: {
+            type: String,
+            trim: true,
+        },
+        address: {
+            type: String,
+            trim: true,
+        },
+        isProfileComplete: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
