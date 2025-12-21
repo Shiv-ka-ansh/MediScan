@@ -3,21 +3,41 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Only initialize Resend if API key is present
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 // Log configuration (but mask API key)
 console.log('--- Email Service Configuration ---');
-console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'Present (masked)' : 'Missing');
-console.log('CLIENT_URL:', process.env.CLIENT_URL);
+console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'Present (masked)' : 'Missing - email features disabled');
+console.log('CLIENT_URL:', process.env.CLIENT_URL || 'Not set');
 console.log('-----------------------------------');
 
 // Use Resend's default testing domain if not verified
 const FROM_EMAIL = 'onboarding@resend.dev'; // Default for testing/unverified domains
 
 /**
+ * Check if email service is available
+ */
+function isEmailServiceAvailable() {
+    if (!resend) {
+        console.warn('⚠️ Email service not configured. Set RESEND_API_KEY to enable emails.');
+        return false;
+    }
+    return true;
+}
+
+/**
  * Send email verification link
  */
 export async function sendVerificationEmail(to, token) {
+    if (!isEmailServiceAvailable()) {
+        console.log(`[MOCK] Would send verification email to: ${to}`);
+        return { id: 'mock-email-disabled' };
+    }
+
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
 
     try {
@@ -64,6 +84,11 @@ export async function sendVerificationEmail(to, token) {
  * Send password reset email
  */
 export async function sendPasswordResetEmail(to, token) {
+    if (!isEmailServiceAvailable()) {
+        console.log(`[MOCK] Would send password reset email to: ${to}`);
+        return { id: 'mock-email-disabled' };
+    }
+
     const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
 
     try {
@@ -110,6 +135,11 @@ export async function sendPasswordResetEmail(to, token) {
  * Send notification email
  */
 export async function sendNotificationEmail(to, subject, message) {
+    if (!isEmailServiceAvailable()) {
+        console.log(`[MOCK] Would send notification email to: ${to}, subject: ${subject}`);
+        return { id: 'mock-email-disabled' };
+    }
+
     try {
         console.log(`Attempting to send notification email to: ${to}, subject: ${subject}`);
         const { data, error } = await resend.emails.send({
