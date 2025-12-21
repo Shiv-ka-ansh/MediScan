@@ -18,32 +18,66 @@ export const NotificationBell = () => {
     const fetchNotifications = async () => {
       try {
         const response = await api.get("/notifications");
-        setNotifications(response.data.notifications);
-        setUnreadCount(response.data.unreadCount);
+        setNotifications(response.data.notifications || []);
+        setUnreadCount(response.data.unreadCount || 0);
       } catch (error) {
-        console.error("Failed to fetch notifications:", error);
+        // Silently handle 404 errors (endpoint may not exist on production)
+        if (error.response?.status === 404) {
+          // Notifications endpoint not available, skip silently
+          return;
+        }
+        // Only log errors in development
+        if (import.meta.env.DEV) {
+          console.error("Failed to fetch notifications:", error);
+        }
       }
     };
 
     fetchNotifications();
 
-    // Setup socket connection
+    // Setup socket connection with error handling
     const token = localStorage.getItem("token");
-    const socket = io(
-      import.meta.env.VITE_API_URL?.replace("/api", "") ||
-        "http://localhost:8000",
-      {
-        auth: { token },
-      }
-    );
+    let socket = null;
 
-    socket.on("notification", (notification) => {
-      setNotifications((prev) => [notification, ...prev]);
-      setUnreadCount((prev) => prev + 1);
-    });
+    try {
+      socket = io(
+        import.meta.env.VITE_API_URL?.replace("/api", "") ||
+          "http://localhost:8000",
+        {
+          auth: { token },
+          reconnectionAttempts: 3, // Limit reconnection attempts
+          reconnectionDelay: 2000,
+          timeout: 5000,
+          transports: ["websocket", "polling"],
+        }
+      );
+
+      socket.on("notification", (notification) => {
+        setNotifications((prev) => [notification, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+      });
+
+      socket.on("connect_error", (error) => {
+        // Silently handle connection errors - server may not support sockets
+        if (import.meta.env.DEV) {
+          console.warn(
+            "Socket connection failed, notifications may be delayed"
+          );
+        }
+        // Disconnect to prevent further reconnection attempts
+        socket.disconnect();
+      });
+    } catch (error) {
+      // Socket initialization failed, continue without real-time updates
+      if (import.meta.env.DEV) {
+        console.warn("Socket.io not available");
+      }
+    }
 
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, [user]);
 
@@ -53,7 +87,10 @@ export const NotificationBell = () => {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error("Failed to mark all as read:", error);
+      // Silently handle errors
+      if (import.meta.env.DEV) {
+        console.error("Failed to mark all as read:", error);
+      }
     }
   };
 

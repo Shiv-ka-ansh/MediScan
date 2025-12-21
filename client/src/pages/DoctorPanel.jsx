@@ -35,6 +35,7 @@ export const DoctorPanel = () => {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
   const [comments, setComments] = useState("");
+  const [reviewing, setReviewing] = useState(false);
   const [filterTerm, setFilterTerm] = useState(""); // new filter state
 
   useEffect(() => {

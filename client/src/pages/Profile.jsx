@@ -17,6 +17,7 @@ import {
   Loader2,
   CheckCircle2,
   Activity,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -244,18 +245,36 @@ export const Profile = () => {
                       Required
                     </span>
                   </label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
-                  >
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-slate-900">
+                        Select Gender
+                      </option>
+                      <option value="male" className="bg-slate-900">
+                        Male
+                      </option>
+                      <option value="female" className="bg-slate-900">
+                        Female
+                      </option>
+                      <option value="other" className="bg-slate-900">
+                        Other
+                      </option>
+                    </select>
+                    <UserCircle
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                      size={16}
+                    />
+                    <ChevronDown
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                      size={16}
+                    />
+                  </div>
                 </div>
               </div>
 
