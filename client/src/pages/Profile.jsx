@@ -223,16 +223,16 @@ export const Profile = () => {
                     </span>
                   </label>
                   <div className="relative">
-                    <Input
+                    <input
                       type="date"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
                       onChange={handleChange}
                       required
-                      className="bg-white/5 border-white/10 pl-10"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none cursor-pointer [color-scheme:dark]"
                     />
                     <Calendar
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
                       size={16}
                     />
                   </div>

@@ -82,10 +82,16 @@ export const DoctorPanel = () => {
 
   const handleViewFile = (report) => {
     if (report.filePath) {
-      const baseUrl = import.meta.env.VITE_API_URL?.replace("/api", "") || "";
-      const fileName = report.filePath.split("/").pop();
+      const baseUrl =
+        import.meta.env.VITE_API_URL?.replace("/api", "") ||
+        "http://localhost:8000";
+      // Handle different path formats
+      const fileName = report.filePath.split(/[/\\]/).pop();
       const fileUrl = `${baseUrl}/uploads/${fileName}`;
+      console.log("Opening file:", fileUrl); // Debug log
       window.open(fileUrl, "_blank");
+    } else {
+      console.warn("No file path available for report:", report._id);
     }
   };
 
@@ -167,198 +173,210 @@ export const DoctorPanel = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* List Section */}
-              {/* Filter Input */}
-              <div className="flex items-center mb-4">
+            <>
+              {/* Filter Input - Outside the grid */}
+              <div className="flex items-center mb-6 gap-3">
                 <Input
                   placeholder="Filter reports by filename..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
-                  className="flex-1 mr-2"
+                  className="flex-1 bg-white/5 border-white/10"
                 />
-                <Button variant="secondary" onClick={() => setFilterTerm("")}>
+                <Button
+                  variant="outline"
+                  onClick={() => setFilterTerm("")}
+                  className="border-white/10 hover:bg-white/5"
+                >
                   Clear
                 </Button>
               </div>
 
-              {/* List Section */}
-              <div className="lg:col-span-5 space-y-4 max-h-[calc(100vh-350px)] overflow-y-auto pr-2 custom-scrollbar">
-                {reports
-                  .filter((report) =>
-                    report.fileName
-                      .toLowerCase()
-                      .includes(filterTerm.toLowerCase())
-                  )
-                  .map((report) => (
-                    <div
-                      key={report._id}
-                      onClick={() => setSelectedReport(report)}
-                      className={cn(
-                        "glass-card p-6 cursor-pointer transition-all duration-300 border-white/5 relative group",
-                        selectedReport?._id === report._id
-                          ? "bg-white/10 border-cyan-500/50 shadow-cyan-500/10"
-                          : "hover:bg-white/5"
-                      )}
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-white/5 rounded-lg group-hover:scale-110 transition-transform">
-                            <FileText size={20} className="text-slate-400" />
+              {/* Main Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* List Section */}
+                <div className="lg:col-span-5 space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 custom-scrollbar">
+                  {reports
+                    .filter((report) =>
+                      report.fileName
+                        .toLowerCase()
+                        .includes(filterTerm.toLowerCase())
+                    )
+                    .map((report) => (
+                      <div
+                        key={report._id}
+                        onClick={() => setSelectedReport(report)}
+                        className={cn(
+                          "glass-card p-6 cursor-pointer transition-all duration-300 border-white/5 relative group",
+                          selectedReport?._id === report._id
+                            ? "bg-white/10 border-cyan-500/50 shadow-cyan-500/10"
+                            : "hover:bg-white/5"
+                        )}
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-white/5 rounded-lg group-hover:scale-110 transition-transform">
+                              <FileText size={20} className="text-slate-400" />
+                            </div>
+                            <h3 className="text-lg font-outfit font-bold text-slate-200">
+                              {report.fileName}
+                            </h3>
                           </div>
-                          <h3 className="text-lg font-outfit font-bold text-slate-200">
-                            {report.fileName}
-                          </h3>
+                          <div className="flex items-center text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded-full border border-amber-400/20 tracking-widest uppercase">
+                            <Clock size={10} className="mr-1" /> Pending
+                          </div>
                         </div>
-                        <div className="flex items-center text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded-full border border-amber-400/20 tracking-widest uppercase">
-                          <Clock size={10} className="mr-1" /> Pending
+
+                        <div className="flex items-center space-x-4 mb-4 text-xs text-slate-500 font-inter font-medium leading-none">
+                          <div className="flex items-center">
+                            <User size={14} className="mr-1.5" />{" "}
+                            {report.userId?.name || "Anonymous Patient"}
+                          </div>
+                          <div className="flex items-center">
+                            <Calendar size={14} className="mr-1.5" />{" "}
+                            {new Date(report.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed italic">
+                          "{report.aiSummary}"
+                        </p>
+                        <div className="mt-4 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewFile(report);
+                            }}
+                            className="text-slate-400 text-xs font-bold uppercase tracking-wider flex items-center hover:text-cyan-400"
+                          >
+                            <Eye size={14} className="mr-1" /> View File
+                          </button>
+                          <span className="text-cyan-400 text-xs font-bold uppercase tracking-wider flex items-center">
+                            Expand Review{" "}
+                            <ChevronRight size={14} className="ml-1" />
+                          </span>
                         </div>
                       </div>
+                    ))}
+                </div>
 
-                      <div className="flex items-center space-x-4 mb-4 text-xs text-slate-500 font-inter font-medium leading-none">
-                        <div className="flex items-center">
-                          <User size={14} className="mr-1.5" />{" "}
-                          {report.userId?.name || "Anonymous Patient"}
-                        </div>
-                        <div className="flex items-center">
-                          <Calendar size={14} className="mr-1.5" />{" "}
-                          {new Date(report.createdAt).toLocaleDateString()}
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed italic">
-                        "{report.aiSummary}"
-                      </p>
-                      <div className="mt-4 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewFile(report);
-                          }}
-                          className="text-slate-400 text-xs font-bold uppercase tracking-wider flex items-center hover:text-cyan-400"
-                        >
-                          <Eye size={14} className="mr-1" /> View File
-                        </button>
-                        <span className="text-cyan-400 text-xs font-bold uppercase tracking-wider flex items-center">
-                          Expand Review{" "}
-                          <ChevronRight size={14} className="ml-1" />
+                {/* Review Section */}
+                <div className="lg:col-span-7">
+                  {selectedReport ? (
+                    <div className="glass-card p-8 sticky top-8 border-white/5 animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+                      <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                        <h2 className="text-2xl font-outfit font-bold text-white">
+                          Detailed Review
+                        </h2>
+                        <span className="text-xs text-slate-500 font-inter">
+                          ID: {selectedReport._id}
                         </span>
                       </div>
-                    </div>
-                  ))}
-              </div>
 
-              {/* Review Section */}
-              <div className="lg:col-span-7">
-                {selectedReport ? (
-                  <div className="glass-card p-8 sticky top-8 border-white/5 animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                      <h2 className="text-2xl font-outfit font-bold text-white">
-                        Detailed Review
-                      </h2>
-                      <span className="text-xs text-slate-500 font-inter">
-                        ID: {selectedReport._id}
-                      </span>
-                    </div>
+                      {/* View Original File Button */}
+                      <div className="flex space-x-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewFile(selectedReport)}
+                          className="border-white/10 hover:bg-white/5"
+                        >
+                          <Eye size={16} className="mr-2" /> View Uploaded File
+                        </Button>
+                      </div>
 
-                    {/* View Original File Button */}
-                    <div className="flex space-x-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewFile(selectedReport)}
-                        className="border-white/10 hover:bg-white/5"
-                      >
-                        <Eye size={16} className="mr-2" /> View Uploaded File
-                      </Button>
-                    </div>
+                      <div className="space-y-6">
+                        <ReviewSection
+                          title="AI Synthesis"
+                          icon={
+                            <Activity className="text-cyan-400" size={16} />
+                          }
+                        >
+                          <p className="text-sm text-slate-400 leading-relaxed italic">
+                            "{selectedReport.aiSummary}"
+                          </p>
+                        </ReviewSection>
 
-                    <div className="space-y-6">
-                      <ReviewSection
-                        title="AI Synthesis"
-                        icon={<Activity className="text-cyan-400" size={16} />}
-                      >
-                        <p className="text-sm text-slate-400 leading-relaxed italic">
-                          "{selectedReport.aiSummary}"
-                        </p>
-                      </ReviewSection>
-
-                      <ReviewSection
-                        title="Neural Abnormalities"
-                        icon={
-                          <AlertTriangle className="text-rose-400" size={16} />
-                        }
-                      >
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {selectedReport.aiAnalysis?.abnormalities?.map(
-                            (ab, i) => (
-                              <span
-                                key={i}
-                                className="px-3 py-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium rounded-lg"
-                              >
-                                {ab}
+                        <ReviewSection
+                          title="Neural Abnormalities"
+                          icon={
+                            <AlertTriangle
+                              className="text-rose-400"
+                              size={16}
+                            />
+                          }
+                        >
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {selectedReport.aiAnalysis?.abnormalities?.map(
+                              (ab, i) => (
+                                <span
+                                  key={i}
+                                  className="px-3 py-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium rounded-lg"
+                                >
+                                  {ab}
+                                </span>
+                              )
+                            )}
+                            {(!selectedReport.aiAnalysis?.abnormalities ||
+                              selectedReport.aiAnalysis.abnormalities.length ===
+                                0) && (
+                              <span className="text-slate-500 text-sm">
+                                No abnormalities detected
                               </span>
-                            )
-                          )}
-                          {(!selectedReport.aiAnalysis?.abnormalities ||
-                            selectedReport.aiAnalysis.abnormalities.length ===
-                              0) && (
-                            <span className="text-slate-500 text-sm">
-                              No abnormalities detected
-                            </span>
-                          )}
-                        </div>
-                      </ReviewSection>
+                            )}
+                          </div>
+                        </ReviewSection>
 
-                      <div className="pt-6 border-t border-white/5 space-y-4">
-                        <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest">
-                          Medical Comments
-                        </h3>
-                        <Input
-                          value={comments}
-                          onChange={(e) => setComments(e.target.value)}
-                          placeholder="Neural signatures verified. Patient status stable..."
-                          multiline
-                          rows={4}
-                          className="bg-white/5 border-white/10"
-                        />
+                        <div className="pt-6 border-t border-white/5 space-y-4">
+                          <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest">
+                            Medical Comments
+                          </h3>
+                          <Input
+                            value={comments}
+                            onChange={(e) => setComments(e.target.value)}
+                            placeholder="Neural signatures verified. Patient status stable..."
+                            multiline
+                            rows={4}
+                            className="bg-white/5 border-white/10"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 pt-4">
+                        <Button
+                          variant="danger"
+                          className="py-6 rounded-2xl border-rose-500/30 text-rose-500 hover:bg-rose-500 hover:text-white"
+                          onClick={() => handleReview("rejected")}
+                          disabled={reviewing}
+                        >
+                          <XCircle size={20} className="mr-2" /> Discard
+                          Findings
+                        </Button>
+                        <Button
+                          className="py-6 rounded-2xl btn-gradient"
+                          onClick={() => handleReview("approved")}
+                          disabled={reviewing}
+                        >
+                          <CheckCircle size={20} className="mr-2" /> Certify
+                          Report
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4 pt-4">
-                      <Button
-                        variant="danger"
-                        className="py-6 rounded-2xl border-rose-500/30 text-rose-500 hover:bg-rose-500 hover:text-white"
-                        onClick={() => handleReview("rejected")}
-                        disabled={reviewing}
-                      >
-                        <XCircle size={20} className="mr-2" /> Discard Findings
-                      </Button>
-                      <Button
-                        className="py-6 rounded-2xl btn-gradient"
-                        onClick={() => handleReview("approved")}
-                        disabled={reviewing}
-                      >
-                        <CheckCircle size={20} className="mr-2" /> Certify
-                        Report
-                      </Button>
+                  ) : (
+                    <div className="glass-card p-12 text-center border-white/5 bg-white/5 flex flex-col items-center justify-center h-full min-h-[400px]">
+                      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                        <ChevronRight
+                          className="text-slate-600 rotate-90"
+                          size={32}
+                        />
+                      </div>
+                      <p className="text-slate-500 font-outfit font-bold uppercase tracking-widest text-sm">
+                        Select a report to initialize review
+                      </p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="glass-card p-12 text-center border-white/5 bg-white/5 flex flex-col items-center justify-center h-full min-h-[400px]">
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                      <ChevronRight
-                        className="text-slate-600 rotate-90"
-                        size={32}
-                      />
-                    </div>
-                    <p className="text-slate-500 font-outfit font-bold uppercase tracking-widest text-sm">
-                      Select a report to initialize review
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </>
       )}
