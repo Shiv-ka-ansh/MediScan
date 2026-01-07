@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { login } from "../services/authService";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
+import { GoogleAuthButton } from "../components/GoogleAuthButton";
 import { Activity, Mail, Lock, LogIn, ArrowLeft, Loader2 } from "lucide-react";
 
 export const Login = () => {
@@ -81,6 +82,21 @@ export const Login = () => {
               </div>
             )}
 
+            {/* Google Login Button - Priority */}
+            <GoogleAuthButton mode="login" />
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-slate-900/80 text-slate-500">
+                  or sign in with email
+                </span>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="relative group">
                 <Mail
@@ -108,6 +124,7 @@ export const Login = () => {
                 <Input
                   label="Network Key (Password)"
                   type="password"
+                  showPasswordToggle
                   className="pl-12"
                   placeholder="••••••••"
                   required

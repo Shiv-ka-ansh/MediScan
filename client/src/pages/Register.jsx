@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { register } from "../services/authService";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
+import { GoogleAuthButton } from "../components/GoogleAuthButton";
 import {
   Activity,
   Mail,
@@ -57,10 +58,14 @@ export const Register = () => {
       // Handle different error types
       if (err.response) {
         // Server responded with error status
-        setError(err.response.data?.message || "Registration failed. Please try again.");
+        setError(
+          err.response.data?.message || "Registration failed. Please try again."
+        );
       } else if (err.request) {
         // Request was made but no response received
-        setError("Cannot connect to server. Please check if the server is running.");
+        setError(
+          "Cannot connect to server. Please check if the server is running."
+        );
       } else {
         // Something else happened
         setError(err.message || "Registration failed. Please try again.");
@@ -102,6 +107,42 @@ export const Register = () => {
               </div>
             )}
 
+            {/* Role Selection - Needed for Google signup too */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-300 font-outfit ml-1 mb-1.5">
+                System Access Role
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <RoleButton
+                  active={formData.role === "patient"}
+                  onClick={() => setFormData({ ...formData, role: "patient" })}
+                  icon={<User size={18} />}
+                  label="Patient"
+                />
+                <RoleButton
+                  active={formData.role === "doctor"}
+                  onClick={() => setFormData({ ...formData, role: "doctor" })}
+                  icon={<Shield size={18} />}
+                  label="Specialist"
+                />
+              </div>
+            </div>
+
+            {/* Google Signup Button - Priority */}
+            <GoogleAuthButton mode="signup" role={formData.role} />
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-slate-900/80 text-slate-500">
+                  or sign up with email
+                </span>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative group">
@@ -139,28 +180,6 @@ export const Register = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 font-outfit ml-1 mb-1.5">
-                  System Access Role
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <RoleButton
-                    active={formData.role === "patient"}
-                    onClick={() =>
-                      setFormData({ ...formData, role: "patient" })
-                    }
-                    icon={<User size={18} />}
-                    label="Patient"
-                  />
-                  <RoleButton
-                    active={formData.role === "doctor"}
-                    onClick={() => setFormData({ ...formData, role: "doctor" })}
-                    icon={<Shield size={18} />}
-                    label="Specialist"
-                  />
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative group">
                   <Lock
@@ -170,6 +189,7 @@ export const Register = () => {
                   <Input
                     label="Secure Key"
                     type="password"
+                    showPasswordToggle
                     className="pl-12"
                     placeholder="••••••••"
                     required
@@ -187,6 +207,7 @@ export const Register = () => {
                   <Input
                     label="Confirm Key"
                     type="password"
+                    showPasswordToggle
                     className="pl-12"
                     placeholder="••••••••"
                     required

@@ -51,3 +51,16 @@ export const getCurrentUser = async () => {
     const response = await api.get('/auth/me');
     return response.data;
 };
+
+/**
+ * Google OAuth authentication
+ */
+export const googleAuth = async (credential, role = "patient") => {
+    try {
+        const response = await api.post("/auth/google", { credential, role });
+        return response.data;
+    } catch (error) {
+        console.error("Google auth API error:", error);
+        throw error;
+    }
+};

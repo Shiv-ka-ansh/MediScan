@@ -19,9 +19,19 @@ const UserSchema = new Schema(
         },
         password: {
             type: String,
-            required: [true, 'Password is required'],
+            required: function () {
+                return !this.googleId; // Password not required for OAuth users
+            },
             minlength: [6, 'Password must be at least 6 characters'],
             select: false, // Don't return password by default
+        },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true, // Allows multiple null values
+        },
+        avatar: {
+            type: String, // Store Google profile picture URL
         },
         role: {
             type: String,

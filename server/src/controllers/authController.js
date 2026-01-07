@@ -1,7 +1,11 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/emailService.js';
+
+// Initialize Google OAuth client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /**
  * Generate JWT token
@@ -300,5 +304,74 @@ export const resendVerification = async (req, res) => {
     } catch (error) {
         console.error('Resend verification error:', error);
         res.status(500).json({ message: 'Failed to process request' });
+    }
+};
+
+/**
+ * Google OAuth authentication
+ * POST /api/auth/google
+ */
+export const googleAuth = async (req, res) => {
+    try {
+        const { credential, role } = req.body;
+
+        if (!credential) {
+            return res.status(400).json({ message: 'Google credential is required' });
+        }
+
+        // Verify the Google token
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        console.log('Google auth attempt for:', email);
+
+        // Check if user exists by googleId or email
+        let user = await User.findOne({
+            $or: [{ googleId }, { email }]
+        });
+
+        if (user) {
+            // Update googleId if user exists but signed up with email
+            if (!user.googleId) {
+                user.googleId = googleId;
+                user.avatar = picture;
+                await user.save();
+                console.log('Linked Google account to existing user:', email);
+            }
+        } else {
+            // Create new user
+            user = await User.create({
+                name,
+                email,
+                googleId,
+                avatar: picture,
+                role: role || 'patient',
+                verified: true, // Google accounts are pre-verified
+            });
+            console.log('Created new user via Google:', email);
+        }
+
+        const token = generateToken(user._id.toString());
+
+        res.json({
+            message: 'Google authentication successful',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                avatar: user.avatar,
+                isProfileComplete: user.isProfileComplete,
+            },
+        });
+    } catch (error) {
+        console.error('Google auth error:', error);
+        res.status(401).json({ message: 'Google authentication failed. Please try again.' });
     }
 };
