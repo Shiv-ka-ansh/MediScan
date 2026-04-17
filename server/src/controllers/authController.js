@@ -4,12 +4,8 @@ import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/emailService.js';
 
-// Initialize Google OAuth client
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-/**
- * Generate JWT token
- */
 const generateToken = (userId) => {
     if (!process.env.JWT_SECRET) {
         throw new Error('JWT_SECRET is not configured');
@@ -19,24 +15,18 @@ const generateToken = (userId) => {
     });
 };
 
-/**
- * Register new user
- * POST /api/auth/register
- */
 export const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
         console.log('Registration attempt for email:', email);
 
-        // Validation
         if (!name || !email || !password) {
             console.log('Registration failed: Missing required fields');
             res.status(400).json({ message: 'Please provide all required fields' });
             return;
         }
 
-        // Check if user exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             console.log('Registration failed: User already exists for email:', email);
@@ -44,14 +34,12 @@ export const register = async (req, res) => {
             return;
         }
 
-        // Check if JWT_SECRET is set
         if (!process.env.JWT_SECRET) {
             console.error('JWT_SECRET is not set in environment variables!');
             res.status(500).json({ message: 'Server configuration error' });
             return;
         }
 
-        // Create user
         const user = await User.create({
             name,
             email,
@@ -59,7 +47,6 @@ export const register = async (req, res) => {
             role: role || 'patient',
         });
 
-        // Generate token
         const token = generateToken(user._id.toString());
 
         console.log('Registration successful for user:', user.email);
@@ -77,7 +64,6 @@ export const register = async (req, res) => {
         });
     } catch (error) {
         console.error('Registration error:', error);
-        // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
             res.status(400).json({ message: messages.join(', ') });
@@ -87,24 +73,18 @@ export const register = async (req, res) => {
     }
 };
 
-/**
- * Login user
- * POST /api/auth/login
- */
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         console.log('Login attempt for email:', email);
 
-        // Validation
         if (!email || !password) {
             console.log('Login failed: Missing email or password');
             res.status(400).json({ message: 'Please provide email and password' });
             return;
         }
 
-        // Find user and include password
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             console.log('Login failed: User not found for email:', email);
@@ -112,7 +92,6 @@ export const login = async (req, res) => {
             return;
         }
 
-        // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             console.log('Login failed: Password mismatch for email:', email);
@@ -120,14 +99,12 @@ export const login = async (req, res) => {
             return;
         }
 
-        // Check if JWT_SECRET is set
         if (!process.env.JWT_SECRET) {
             console.error('JWT_SECRET is not set in environment variables!');
             res.status(500).json({ message: 'Server configuration error' });
             return;
         }
 
-        // Generate token
         const token = generateToken(user._id.toString());
 
         console.log('Login successful for user:', user.email);
@@ -149,10 +126,6 @@ export const login = async (req, res) => {
     }
 };
 
-/**
- * Get current user
- * GET /api/auth/me
- */
 export const getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -171,10 +144,6 @@ export const getMe = async (req, res) => {
     }
 };
 
-/**
- * Forgot Password
- * POST /api/auth/forgot-password
- */
 export const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
@@ -185,22 +154,18 @@ export const forgotPassword = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            // Don't reveal if user exists
             return res.json({ message: 'If an account exists, a reset link has been sent.' });
         }
 
-        // Generate reset token
         const resetToken = crypto.randomBytes(32).toString('hex');
         user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        user.resetPasswordExpires = Date.now() + 3600000;
         await user.save();
 
-        // Send email
         try {
             await sendPasswordResetEmail(user.email, resetToken);
         } catch (emailError) {
             console.error('Email send error:', emailError);
-            // Continue anyway - don't reveal email sending issues
         }
 
         res.json({ message: 'If an account exists, a reset link has been sent.' });
@@ -210,10 +175,6 @@ export const forgotPassword = async (req, res) => {
     }
 };
 
-/**
- * Reset Password
- * POST /api/auth/reset-password
- */
 export const resetPassword = async (req, res) => {
     try {
         const { token, password } = req.body;
@@ -245,10 +206,6 @@ export const resetPassword = async (req, res) => {
     }
 };
 
-/**
- * Verify Email
- * GET /api/auth/verify-email
- */
 export const verifyEmail = async (req, res) => {
     try {
         const { token } = req.query;
@@ -276,10 +233,6 @@ export const verifyEmail = async (req, res) => {
     }
 };
 
-/**
- * Resend verification email
- * POST /api/auth/resend-verification
- */
 export const resendVerification = async (req, res) => {
     try {
         const { email } = req.body;
@@ -289,7 +242,6 @@ export const resendVerification = async (req, res) => {
             return res.json({ message: 'If an unverified account exists, a verification link has been sent.' });
         }
 
-        // Generate verification token
         const verificationToken = crypto.randomBytes(32).toString('hex');
         user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
         await user.save();
@@ -307,10 +259,6 @@ export const resendVerification = async (req, res) => {
     }
 };
 
-/**
- * Google OAuth authentication
- * POST /api/auth/google
- */
 export const googleAuth = async (req, res) => {
     try {
         const { credential, role } = req.body;
@@ -319,7 +267,6 @@ export const googleAuth = async (req, res) => {
             return res.status(400).json({ message: 'Google credential is required' });
         }
 
-        // Verify the Google token
         const ticket = await googleClient.verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID,
@@ -330,13 +277,11 @@ export const googleAuth = async (req, res) => {
 
         console.log('Google auth attempt for:', email);
 
-        // Check if user exists by googleId or email
         let user = await User.findOne({
             $or: [{ googleId }, { email }]
         });
 
         if (user) {
-            // Update googleId if user exists but signed up with email
             if (!user.googleId) {
                 user.googleId = googleId;
                 user.avatar = picture;
@@ -344,14 +289,13 @@ export const googleAuth = async (req, res) => {
                 console.log('Linked Google account to existing user:', email);
             }
         } else {
-            // Create new user
             user = await User.create({
                 name,
                 email,
                 googleId,
                 avatar: picture,
                 role: role || 'patient',
-                verified: true, // Google accounts are pre-verified
+                verified: true,
             });
             console.log('Created new user via Google:', email);
         }

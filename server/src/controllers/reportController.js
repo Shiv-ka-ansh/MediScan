@@ -3,10 +3,6 @@ import { extractTextFromReport } from '../utils/textExtraction.js';
 import { analyzeReport } from '../utils/aiService.js';
 import path from 'path';
 
-/**
- * Upload and analyze medical report
- * POST /api/reports/upload
- */
 export const uploadReport = async (
     req,
     res
@@ -22,7 +18,6 @@ export const uploadReport = async (
         const filePath = file.path;
         const fileType = path.extname(file.originalname).slice(1).toLowerCase();
 
-        // Determine file type category
         let fileTypeCategory;
         if (fileType === 'pdf') {
             fileTypeCategory = 'pdf';
@@ -32,7 +27,6 @@ export const uploadReport = async (
             fileTypeCategory = 'text';
         }
 
-        // Extract text from file
         let extractedText = '';
         try {
             extractedText = await extractTextFromReport(filePath, fileTypeCategory);
@@ -51,7 +45,6 @@ export const uploadReport = async (
             return;
         }
 
-        // Analyze with AI
         let aiAnalysis;
         try {
             console.log('Starting AI Analysis...');
@@ -66,7 +59,6 @@ export const uploadReport = async (
             return;
         }
 
-        // Create report in database
         const report = await Report.create({
             userId: req.user._id,
             fileName: file.originalname,
@@ -98,10 +90,6 @@ export const uploadReport = async (
     }
 };
 
-/**
- * Get all reports for current user
- * GET /api/reports
- */
 export const getUserReports = async (
     req,
     res
@@ -117,10 +105,6 @@ export const getUserReports = async (
     }
 };
 
-/**
- * Get single report by ID
- * GET /api/reports/:id
- */
 export const getReport = async (
     req,
     res
@@ -135,7 +119,6 @@ export const getReport = async (
             return;
         }
 
-        // Check if user owns the report or is a doctor/admin
         if (
             report.userId.toString() !== req.user._id.toString() &&
             req.user.role !== 'doctor' &&
@@ -151,10 +134,6 @@ export const getReport = async (
     }
 };
 
-/**
- * Get pending reports (for doctors)
- * GET /api/reports/pending
- */
 export const getPendingReports = async (
     req,
     res
@@ -173,10 +152,6 @@ export const getPendingReports = async (
     }
 };
 
-/**
- * Review report (for doctors)
- * PUT /api/reports/:id/review
- */
 export const reviewReport = async (
     req,
     res
@@ -219,10 +194,6 @@ export const reviewReport = async (
     }
 };
 
-/**
- * Delete report
- * DELETE /api/reports/:id
- */
 export const deleteReport = async (
     req,
     res
@@ -235,7 +206,6 @@ export const deleteReport = async (
             return;
         }
 
-        // Check if user owns the report or is admin
         if (
             report.userId.toString() !== req.user._id.toString() &&
             req.user.role !== 'admin'
@@ -244,7 +214,6 @@ export const deleteReport = async (
             return;
         }
 
-        // TODO: Delete file from filesystem
         await Report.findByIdAndDelete(req.params.id);
 
         res.json({ message: 'Report deleted successfully' });
@@ -253,10 +222,6 @@ export const deleteReport = async (
     }
 };
 
-/**
- * Get reports reviewed by current doctor
- * GET /api/reports/reviewed
- */
 export const getReviewedReports = async (req, res) => {
     try {
         const reports = await Report.find({ reviewedBy: req.user._id })

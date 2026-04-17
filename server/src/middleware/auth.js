@@ -1,17 +1,13 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-/**
- * Authentication middleware
- * Verifies JWT token and attaches user to request
- */
 export const authenticate = async (
     req,
     res,
     next
 ) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+        const token = req.headers.authorization?.split(' ')[1];
 
         if (!token) {
             res.status(401).json({ message: 'No token provided' });
@@ -47,10 +43,6 @@ export const authenticate = async (
     }
 };
 
-/**
- * Role-based authorization middleware
- * @param roles - Allowed roles
- */
 export const authorize = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {

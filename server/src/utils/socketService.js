@@ -3,11 +3,8 @@ import jwt from 'jsonwebtoken';
 import Notification from '../models/Notification.js';
 
 let io = null;
-const userSockets = new Map(); // userId -> socketId
+const userSockets = new Map();
 
-/**
- * Initialize Socket.io server
- */
 export function initSocketServer(server) {
     io = new Server(server, {
         cors: {
@@ -36,7 +33,6 @@ export function initSocketServer(server) {
         console.log(`🔌 User connected: ${socket.userId}`);
         userSockets.set(socket.userId, socket.id);
 
-        // Mark notifications as read
         socket.on('mark_read', async (notificationId) => {
             try {
                 await Notification.findByIdAndUpdate(notificationId, { read: true });
@@ -45,7 +41,6 @@ export function initSocketServer(server) {
             }
         });
 
-        // Mark all as read
         socket.on('mark_all_read', async () => {
             try {
                 await Notification.updateMany(
@@ -67,12 +62,8 @@ export function initSocketServer(server) {
     return io;
 }
 
-/**
- * Send notification to a specific user
- */
 export async function sendNotification(userId, type, title, message, reportId = null) {
     try {
-        // Save to database
         const notification = await Notification.create({
             userId,
             type,
@@ -81,7 +72,6 @@ export async function sendNotification(userId, type, title, message, reportId = 
             reportId,
         });
 
-        // Send via socket if user is online
         const socketId = userSockets.get(userId.toString());
         if (socketId && io) {
             io.to(socketId).emit('notification', {
@@ -101,9 +91,6 @@ export async function sendNotification(userId, type, title, message, reportId = 
     }
 }
 
-/**
- * Notify patient when doctor opens their report
- */
 export async function notifyReportOpened(report, doctorName) {
     await sendNotification(
         report.userId,
@@ -114,9 +101,6 @@ export async function notifyReportOpened(report, doctorName) {
     );
 }
 
-/**
- * Notify patient when doctor comments on their report
- */
 export async function notifyReportCommented(report, doctorName) {
     await sendNotification(
         report.userId,
@@ -127,9 +111,6 @@ export async function notifyReportCommented(report, doctorName) {
     );
 }
 
-/**
- * Notify patient when report is verified
- */
 export async function notifyReportVerified(report, doctorName, status) {
     const statusText = status === 'approved' ? 'approved' : 'needs attention';
     await sendNotification(

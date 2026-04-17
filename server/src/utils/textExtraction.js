@@ -3,16 +3,6 @@ import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
 import fs from 'fs/promises';
 
-/**
- * Text extraction utilities for medical reports
- * Supports PDF, images (with OCR), and plain text
- */
-
-/**
- * Extract text from PDF file
- * @param filePath - Path to PDF file
- * @returns Extracted text
- */
 export async function extractTextFromPDF(filePath) {
     try {
         const dataBuffer = await fs.readFile(filePath);
@@ -24,14 +14,8 @@ export async function extractTextFromPDF(filePath) {
     }
 }
 
-/**
- * Extract text from image using OCR (Tesseract.js)
- * @param filePath - Path to image file
- * @returns Extracted text
- */
 export async function extractTextFromImage(filePath) {
     try {
-        // Preprocess image for better OCR results
         const imageBuffer = await fs.readFile(filePath);
         const processedImage = await sharp(imageBuffer)
             .greyscale()
@@ -39,10 +23,8 @@ export async function extractTextFromImage(filePath) {
             .sharpen()
             .toBuffer();
 
-        // Perform OCR
         const { data } = await Tesseract.recognize(processedImage, 'eng', {
             logger: (m) => {
-                // Optional: log OCR progress
                 if (m.status === 'recognizing text') {
                     console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
                 }
@@ -56,11 +38,6 @@ export async function extractTextFromImage(filePath) {
     }
 }
 
-/**
- * Extract text from plain text file
- * @param filePath - Path to text file
- * @returns Extracted text
- */
 export async function extractTextFromFile(filePath) {
     try {
         const text = await fs.readFile(filePath, 'utf-8');
@@ -71,12 +48,6 @@ export async function extractTextFromFile(filePath) {
     }
 }
 
-/**
- * Main extraction function that routes based on file type
- * @param filePath - Path to file
- * @param fileType - Type of file (pdf, image, text)
- * @returns Extracted text
- */
 export async function extractTextFromReport(
     filePath,
     fileType
@@ -97,5 +68,4 @@ export async function extractTextFromReport(
     }
 }
 
-// Export as default for backward compatibility
 export { extractTextFromReport as extractText };

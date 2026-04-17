@@ -1,9 +1,5 @@
 import Notification from '../models/Notification.js';
 
-/**
- * Get user notifications
- * GET /api/notifications
- */
 export const getNotifications = async (req, res) => {
     try {
         const notifications = await Notification.find({ userId: req.user._id })
@@ -21,10 +17,6 @@ export const getNotifications = async (req, res) => {
     }
 };
 
-/**
- * Mark notification as read
- * PUT /api/notifications/:id/read
- */
 export const markAsRead = async (req, res) => {
     try {
         const notification = await Notification.findOneAndUpdate(
@@ -43,10 +35,6 @@ export const markAsRead = async (req, res) => {
     }
 };
 
-/**
- * Mark all notifications as read
- * PUT /api/notifications/read-all
- */
 export const markAllAsRead = async (req, res) => {
     try {
         await Notification.updateMany(
@@ -60,10 +48,6 @@ export const markAllAsRead = async (req, res) => {
     }
 };
 
-/**
- * Delete notification
- * DELETE /api/notifications/:id
- */
 export const deleteNotification = async (req, res) => {
     try {
         const notification = await Notification.findOneAndDelete({

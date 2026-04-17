@@ -1,9 +1,5 @@
 import User from '../models/User.js';
 
-/**
- * Get user profile
- * GET /api/users/profile
- */
 export const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id).select('-password');
@@ -16,10 +12,6 @@ export const getProfile = async (req, res) => {
     }
 };
 
-/**
- * Update user profile
- * PUT /api/users/profile
- */
 export const updateProfile = async (req, res) => {
     const { name, phone, dateOfBirth, gender, bloodGroup, address } = req.body;
 
@@ -36,7 +28,6 @@ export const updateProfile = async (req, res) => {
         if (bloodGroup !== undefined) user.bloodGroup = bloodGroup;
         if (address !== undefined) user.address = address;
 
-        // Simple check to mark profile as complete
         if (user.phone && user.dateOfBirth && user.gender) {
             user.isProfileComplete = true;
         }

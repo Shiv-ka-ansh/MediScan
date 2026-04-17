@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 
-// Report schema
 const ReportSchema = new Schema(
     {
         userId: {
@@ -56,7 +55,6 @@ const ReportSchema = new Schema(
     }
 );
 
-// Index for faster queries
 ReportSchema.index({ userId: 1, createdAt: -1 });
 ReportSchema.index({ status: 1 });
 

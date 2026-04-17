@@ -4,7 +4,6 @@ import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// All user routes are protected
 router.use(authenticate);
 
 router.get('/profile', getProfile);

@@ -3,17 +3,14 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-// Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadsDir);
@@ -24,7 +21,6 @@ const storage = multer.diskStorage({
     },
 });
 
-// File filter for allowed types
 const fileFilter = (
     req,
     file,
@@ -43,11 +39,10 @@ const fileFilter = (
     }
 };
 
-// Configure multer
 export const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB limit
+        fileSize: 10 * 1024 * 1024,
     },
     fileFilter: fileFilter,
 });

@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-// User schema
 const UserSchema = new Schema(
     {
         name: {
@@ -20,18 +19,18 @@ const UserSchema = new Schema(
         password: {
             type: String,
             required: function () {
-                return !this.googleId; // Password not required for OAuth users
+                return !this.googleId;
             },
             minlength: [6, 'Password must be at least 6 characters'],
-            select: false, // Don't return password by default
+            select: false,
         },
         googleId: {
             type: String,
             unique: true,
-            sparse: true, // Allows multiple null values
+            sparse: true,
         },
         avatar: {
-            type: String, // Store Google profile picture URL
+            type: String,
         },
         role: {
             type: String,
@@ -81,7 +80,6 @@ const UserSchema = new Schema(
     }
 );
 
-// Hash password before saving
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
@@ -90,7 +88,6 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
-// Method to compare password
 UserSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
