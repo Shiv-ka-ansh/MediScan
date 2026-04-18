@@ -55,6 +55,127 @@
   }
 }
 
+/* Pulse ring keyframes */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  80%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.pulse-ring-2 {
+  animation: pulse-ring 2.4s 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.pulse-ring-3 {
+  animation: pulse-ring 2.4s 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* Scan line keyframes */
+@keyframes scan-line {
+  0%   { top: -4%; opacity: 0.6; }
+  50%  { opacity: 0.9; }
+  100% { top: 104%; opacity: 0.6; }
+}
+
+.scan-line {
+  animation: scan-line 3s linear infinite;
+}
+
+/* Neural grid fade */
+@keyframes grid-fade {
+  0%, 100% { opacity: 0.04; }
+  50%       { opacity: 0.07; }
+}
+
+.animate-grid-fade {
+  animation: grid-fade 8s ease-in-out infinite;
+}
+
+/* Gradient-x shimmer for hero title */
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 6s ease infinite;
+}
+
+/* Dashboard stat card pop-in */
+@keyframes stat-pop {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.stat-pop {
+  animation: stat-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Shimmer sweep for loading skeleton */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.04) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+/* Float for empty-state icon */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Analysis progress bar */
+@keyframes progress-fill {
+  0%   { width: 0%; }
+  100% { width: 95%; }
+}
+
+.progress-fill {
+  animation: progress-fill 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Fade message cycle */
+@keyframes msg-fade {
+  0%   { opacity: 0; transform: translateY(4px); }
+  15%  { opacity: 1; transform: translateY(0); }
+  85%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+.msg-fade {
+  animation: msg-fade 1.5s ease-in-out;
+}
+
+/* Input cyan glow focus ring */
+.input-glow:focus {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+  outline: none;
+}
+
+/* Spin for searching indicator */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.spin-slow {
+  animation: spin-slow 1s linear infinite;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

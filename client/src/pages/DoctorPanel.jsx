@@ -82,14 +82,7 @@ export const DoctorPanel = () => {
 
   const handleViewFile = (report) => {
     if (report.filePath) {
-      const baseUrl =
-        import.meta.env.VITE_API_URL?.replace("/api", "") ||
-        "http://localhost:8000";
-      // Handle different path formats
-      const fileName = report.filePath.split(/[/\\]/).pop();
-      const fileUrl = `${baseUrl}/uploads/${fileName}`;
-      console.log("Opening file:", fileUrl); // Debug log
-      window.open(fileUrl, "_blank");
+      window.open(report.filePath, "_blank");
     } else {
       console.warn("No file path available for report:", report._id);
     }
@@ -272,17 +265,49 @@ export const DoctorPanel = () => {
                         </span>
                       </div>
 
-                      {/* View Original File Button */}
-                      <div className="flex space-x-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewFile(selectedReport)}
-                          className="border-white/10 hover:bg-white/5"
-                        >
-                          <Eye size={16} className="mr-2" /> View Uploaded File
-                        </Button>
-                      </div>
+                      {/* View Original File Button / Inline Image Preview */}
+                      {selectedReport.fileType === "image" && selectedReport.filePath ? (
+                        <div className="space-y-3">
+                          <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest flex items-center">
+                            <span className="p-1.5 bg-white/5 rounded-md mr-2">
+                              <Eye size={14} className="text-cyan-400" />
+                            </span>
+                            Uploaded Image
+                          </h3>
+                          <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                            <img
+                              src={selectedReport.filePath}
+                              alt={selectedReport.fileName}
+                              className="w-full object-contain max-h-72 rounded-2xl"
+                              style={{ background: "rgba(255,255,255,0.03)" }}
+                            />
+                            <div
+                              className="absolute inset-0 rounded-2xl pointer-events-none"
+                              style={{ boxShadow: "inset 0 0 0 1px rgba(6,182,212,0.10)" }}
+                            />
+                          </div>
+                          <a
+                            href={selectedReport.filePath}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-white/5 hover:bg-cyan-400/10 border border-white/10 hover:border-cyan-400/30 rounded-xl text-xs text-slate-400 hover:text-cyan-300 transition-all duration-200"
+                          >
+                            <Eye size={13} className="mr-1" />
+                            <span>Open full resolution</span>
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="flex space-x-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewFile(selectedReport)}
+                            className="border-white/10 hover:bg-white/5"
+                          >
+                            <Eye size={16} className="mr-2" /> View Uploaded File
+                          </Button>
+                        </div>
+                      )}
 
                       <div className="space-y-6">
                         <ReviewSection

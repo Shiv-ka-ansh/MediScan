@@ -68,3 +68,23 @@ export const getReviewedReports = async () => {
     const response = await api.get('/reports/reviewed');
     return response.data;
 };
+
+/**
+ * Fetch list of supported translation languages
+ */
+export const getSupportedLanguages = async () => {
+    const response = await api.get('/reports/languages');
+    return response.data;
+};
+
+/**
+ * Translate a report's AI analysis to a target language
+ * @param {string} id - Report ID
+ * @param {string} lang - Language code e.g. 'hi', 'pa', 'bn'
+ */
+export const translateReport = async (id, lang) => {
+    const response = await api.get(`/reports/${id}/translate`, {
+        params: { lang },
+    });
+    return response.data;
+};

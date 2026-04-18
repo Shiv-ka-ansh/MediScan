@@ -2,10 +2,38 @@ import pdfParse from 'pdf-parse';
 import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
 import fs from 'fs/promises';
+import https from 'https';
+import http from 'http';
 
-export async function extractTextFromPDF(filePath) {
+/**
+ * Fetch a file from a URL and return it as a Buffer
+ * Used for Cloudinary-hosted files
+ */
+async function fetchBufferFromUrl(url) {
+    return new Promise((resolve, reject) => {
+        const client = url.startsWith('https') ? https : http;
+        client.get(url, (res) => {
+            const chunks = [];
+            res.on('data', (chunk) => chunks.push(chunk));
+            res.on('end', () => resolve(Buffer.concat(chunks)));
+            res.on('error', reject);
+        }).on('error', reject);
+    });
+}
+
+/**
+ * Read file bytes — supports both local path and remote URL
+ */
+async function readFileBytes(fileSource) {
+    if (fileSource.startsWith('http://') || fileSource.startsWith('https://')) {
+        return fetchBufferFromUrl(fileSource);
+    }
+    return fs.readFile(fileSource);
+}
+
+export async function extractTextFromPDF(fileSource) {
     try {
-        const dataBuffer = await fs.readFile(filePath);
+        const dataBuffer = await readFileBytes(fileSource);
         const data = await pdfParse(dataBuffer);
         return data.text || '';
     } catch (error) {
@@ -14,9 +42,9 @@ export async function extractTextFromPDF(filePath) {
     }
 }
 
-export async function extractTextFromImage(filePath) {
+export async function extractTextFromImage(fileSource) {
     try {
-        const imageBuffer = await fs.readFile(filePath);
+        const imageBuffer = await readFileBytes(fileSource);
         const processedImage = await sharp(imageBuffer)
             .greyscale()
             .normalize()
@@ -38,9 +66,13 @@ export async function extractTextFromImage(filePath) {
     }
 }
 
-export async function extractTextFromFile(filePath) {
+export async function extractTextFromFile(fileSource) {
     try {
-        const text = await fs.readFile(filePath, 'utf-8');
+        if (fileSource.startsWith('http://') || fileSource.startsWith('https://')) {
+            const buffer = await fetchBufferFromUrl(fileSource);
+            return buffer.toString('utf-8');
+        }
+        const text = await fs.readFile(fileSource, 'utf-8');
         return text;
     } catch (error) {
         console.error('Text file reading error:', error);
@@ -48,21 +80,18 @@ export async function extractTextFromFile(filePath) {
     }
 }
 
-export async function extractTextFromReport(
-    filePath,
-    fileType
-) {
+export async function extractTextFromReport(fileSource, fileType) {
     switch (fileType.toLowerCase()) {
         case 'pdf':
-            return await extractTextFromPDF(filePath);
+            return await extractTextFromPDF(fileSource);
         case 'image':
         case 'jpg':
         case 'jpeg':
         case 'png':
-            return await extractTextFromImage(filePath);
+            return await extractTextFromImage(fileSource);
         case 'text':
         case 'txt':
-            return await extractTextFromFile(filePath);
+            return await extractTextFromFile(fileSource);
         default:
             throw new Error(`Unsupported file type: ${fileType}`);
     }

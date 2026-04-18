@@ -15,6 +15,11 @@ const ReportSchema = new Schema(
             type: String,
             required: true,
         },
+        // Cloudinary public_id for deletion
+        cloudinaryPublicId: {
+            type: String,
+            default: '',
+        },
         fileType: {
             type: String,
             required: true,
@@ -32,6 +37,20 @@ const ReportSchema = new Schema(
             abnormalities: [String],
             recommendations: [String],
             plainEnglish: String,
+        },
+        // Cached translations keyed by language code e.g. { hi: {...}, pa: {...} }
+        translations: {
+            type: Map,
+            of: new Schema(
+                {
+                    summary: String,
+                    abnormalities: [String],
+                    recommendations: [String],
+                    plainEnglish: String,
+                },
+                { _id: false }
+            ),
+            default: {},
         },
         status: {
             type: String,

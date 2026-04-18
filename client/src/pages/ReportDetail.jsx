@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getReport } from "../services/reportService";
+import { getReport, translateReport } from "../services/reportService";
 import { Button } from "../components/Button";
 import {
   FileText,
@@ -14,14 +14,36 @@ import {
   Clock,
   ExternalLink,
   MessageSquare,
+  Languages,
+  Loader2,
 } from "lucide-react";
 import jsPDF from "jspdf";
+
+const SUPPORTED_LANGUAGES = {
+  en: "English",
+  hi: "हिंदी (Hindi)",
+  pa: "ਪੰਜਾਬੀ (Punjabi)",
+  bn: "বাংলা (Bengali)",
+  te: "తెలుగు (Telugu)",
+  mr: "मराठी (Marathi)",
+  ta: "தமிழ் (Tamil)",
+  gu: "ગુજરાતી (Gujarati)",
+  kn: "ಕನ್ನಡ (Kannada)",
+  ur: "اردو (Urdu)",
+};
 
 export const ReportDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Multi-lingual state
+  const [selectedLang, setSelectedLang] = useState("en");
+  const [translating, setTranslating] = useState(false);
+  const [translationError, setTranslationError] = useState("");
+  const [translationCache, setTranslationCache] = useState({ en: null }); // en = original
+  const [activeTranslation, setActiveTranslation] = useState(null); // null = show original
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -38,6 +60,46 @@ export const ReportDetail = () => {
     fetchReport();
   }, [id]);
 
+  const handleLanguageChange = async (lang) => {
+    setSelectedLang(lang);
+    setTranslationError("");
+
+    if (lang === "en") {
+      setActiveTranslation(null);
+      return;
+    }
+
+    // Use cached translation if available
+    if (translationCache[lang]) {
+      setActiveTranslation(translationCache[lang]);
+      return;
+    }
+
+    setTranslating(true);
+    try {
+      const result = await translateReport(id, lang);
+      const translation = result.translation;
+      setTranslationCache((prev) => ({ ...prev, [lang]: translation }));
+      setActiveTranslation(translation);
+    } catch (error) {
+      console.error("Translation failed:", error);
+      setTranslationError("Translation failed. Please try again.");
+      setSelectedLang("en");
+      setActiveTranslation(null);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  // Use translated content if available, fallback to original
+  const displaySummary = activeTranslation?.summary ?? report?.aiSummary;
+  const displayAbnormalities =
+    activeTranslation?.abnormalities ?? report?.aiAnalysis?.abnormalities;
+  const displayRecommendations =
+    activeTranslation?.recommendations ?? report?.aiAnalysis?.recommendations;
+  const displayPlainEnglish =
+    activeTranslation?.plainEnglish ?? report?.aiAnalysis?.plainEnglish;
+
   const handleDownloadPDF = () => {
     if (!report) return;
 
@@ -47,13 +109,13 @@ export const ReportDetail = () => {
 
     // Header
     doc.setFontSize(22);
-    doc.setTextColor(34, 211, 238); // Cyan-400
+    doc.setTextColor(34, 211, 238);
     doc.text("MedScan AI Analysis Report", margin, y);
     y += 15;
 
     // File Info
     doc.setFontSize(12);
-    doc.setTextColor(100, 116, 139); // Slate-500
+    doc.setTextColor(100, 116, 139);
     doc.text(`Report: ${report.fileName}`, margin, y);
     y += 7;
     doc.text(
@@ -67,20 +129,24 @@ export const ReportDetail = () => {
       margin,
       y
     );
+    if (selectedLang !== "en") {
+      y += 7;
+      doc.text(`Language: ${SUPPORTED_LANGUAGES[selectedLang]}`, margin, y);
+    }
     y += 15;
 
     // AI Summary
     doc.setFontSize(16);
     doc.setTextColor(255, 255, 255);
-    doc.setFillColor(15, 23, 42); // slate-900
+    doc.setFillColor(15, 23, 42);
     doc.rect(margin, y - 5, 170, 10, "F");
     doc.text("Clinical Abstract", margin + 2, y + 2);
     y += 15;
 
     doc.setFontSize(12);
-    doc.setTextColor(51, 65, 85); // Slate-800
+    doc.setTextColor(51, 65, 85);
     const summaryLines = doc.splitTextToSize(
-      report.aiSummary || "No summary available.",
+      displaySummary || "No summary available.",
       170
     );
     doc.text(summaryLines, margin, y);
@@ -88,13 +154,13 @@ export const ReportDetail = () => {
 
     // Abnormalities
     doc.setFontSize(16);
-    doc.setTextColor(225, 29, 72); // Rose-600
+    doc.setTextColor(225, 29, 72);
     doc.text("Neural Observations", margin, y);
     y += 10;
 
     doc.setFontSize(12);
     doc.setTextColor(51, 65, 85);
-    const abnormalities = report.aiAnalysis?.abnormalities || [];
+    const abnormalities = displayAbnormalities || [];
     if (abnormalities.length > 0) {
       abnormalities.forEach((item) => {
         const itemLines = doc.splitTextToSize(`• ${item}`, 170);
@@ -109,13 +175,13 @@ export const ReportDetail = () => {
 
     // Recommendations
     doc.setFontSize(16);
-    doc.setTextColor(2, 132, 199); // blue-600
+    doc.setTextColor(2, 132, 199);
     doc.text("Medical Recommendations", margin, y);
     y += 10;
 
     doc.setFontSize(12);
     doc.setTextColor(51, 65, 85);
-    const recommendations = report.aiAnalysis?.recommendations || [];
+    const recommendations = displayRecommendations || [];
     recommendations.forEach((rec) => {
       const recLines = doc.splitTextToSize(`• ${rec}`, 170);
       doc.text(recLines, margin, y);
@@ -157,7 +223,7 @@ export const ReportDetail = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -165,7 +231,7 @@ export const ReportDetail = () => {
         >
           <ChevronLeft className="mr-1" size={18} /> Back to Dashboard
         </Button>
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -182,6 +248,53 @@ export const ReportDetail = () => {
             <MessageSquare size={16} className="mr-2" /> Discuss with AI
           </Button>
         </div>
+      </div>
+
+      {/* ── Language Selector ── */}
+      <div className="glass-card p-4 mb-6 border-white/5 flex items-center flex-wrap gap-4">
+        <div className="flex items-center space-x-2 text-cyan-400">
+          <Languages size={20} />
+          <span className="text-sm font-bold text-slate-200 font-outfit">
+            Report Language
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2 flex-1">
+          {Object.entries(SUPPORTED_LANGUAGES).map(([code, label]) => (
+            <button
+              key={code}
+              id={`lang-btn-${code}`}
+              onClick={() => handleLanguageChange(code)}
+              disabled={translating}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 border 
+                ${
+                  selectedLang === code
+                    ? "bg-cyan-400/20 border-cyan-400/50 text-cyan-300"
+                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                }
+                ${translating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+              `}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {translating && (
+          <div className="flex items-center space-x-2 text-cyan-400 ml-2">
+            <Loader2 size={16} className="animate-spin" />
+            <span className="text-xs">Translating...</span>
+          </div>
+        )}
+
+        {translationError && (
+          <p className="text-xs text-rose-400 ml-2">{translationError}</p>
+        )}
+
+        {activeTranslation && !translating && (
+          <span className="text-[10px] text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">
+            ✓ Translated
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -222,16 +335,29 @@ export const ReportDetail = () => {
                   Abstract
                 </h3>
                 <div className="p-6 bg-white/5 rounded-2xl border border-white/5 leading-relaxed text-slate-300 italic">
-                  "{report.aiSummary}"
+                  &ldquo;{displaySummary}&rdquo;
                 </div>
               </section>
+
+              {/* Plain English / Patient-Friendly Explanation */}
+              {displayPlainEnglish && (
+                <section className="mb-10">
+                  <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
+                    <Info className="mr-2 text-indigo-400" size={18} /> Plain
+                    Language Explanation
+                  </h3>
+                  <div className="p-6 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 leading-relaxed text-slate-300">
+                    {displayPlainEnglish}
+                  </div>
+                </section>
+              )}
 
               <section>
                 <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4">
                   Neural Observations
                 </h3>
                 <div className="space-y-4">
-                  {report.aiAnalysis?.abnormalities?.map((item, i) => (
+                  {displayAbnormalities?.map((item, i) => (
                     <div
                       key={i}
                       className="flex items-start space-x-4 p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl"
@@ -243,7 +369,7 @@ export const ReportDetail = () => {
                       <span className="text-slate-300 font-inter">{item}</span>
                     </div>
                   ))}
-                  {report.aiAnalysis?.abnormalities?.length === 0 && (
+                  {displayAbnormalities?.length === 0 && (
                     <div className="flex items-start space-x-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
                       <CheckCircle2
                         className="text-emerald-400 mt-1 flex-shrink-0"
@@ -265,7 +391,7 @@ export const ReportDetail = () => {
               Medical Recommendations
             </h3>
             <ul className="grid sm:grid-cols-2 gap-4">
-              {report.aiAnalysis?.recommendations?.map((rec, i) => (
+              {displayRecommendations?.map((rec, i) => (
                 <li
                   key={i}
                   className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/5"
@@ -322,9 +448,54 @@ export const ReportDetail = () => {
             </div>
           </div>
 
+          {/* View Original File */}
+          {report.filePath && (
+            <div className="glass-card p-6 border-white/5">
+              <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
+                <FileText className="mr-2 text-cyan-400" size={18} /> Original
+                File
+              </h3>
+
+              {report.fileType === "image" ? (
+                <div className="space-y-3">
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                    <img
+                      src={report.filePath}
+                      alt={report.fileName}
+                      className="w-full object-contain max-h-80 rounded-2xl"
+                      style={{ background: "rgba(255,255,255,0.03)" }}
+                    />
+                    <div className="absolute inset-0 rounded-2xl pointer-events-none"
+                      style={{ boxShadow: "inset 0 0 0 1px rgba(6,182,212,0.08)" }}
+                    />
+                  </div>
+                  <a
+                    href={report.filePath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-white/5 hover:bg-cyan-400/10 border border-white/10 hover:border-cyan-400/30 rounded-xl text-xs text-slate-400 hover:text-cyan-300 transition-all duration-200"
+                  >
+                    <ExternalLink size={14} />
+                    <span>Open full resolution</span>
+                  </a>
+                </div>
+              ) : (
+                <a
+                  href={report.filePath}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-2 w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-slate-300 hover:text-white transition-all duration-200"
+                >
+                  <ExternalLink size={16} />
+                  <span>View on Cloudinary</span>
+                </a>
+              )}
+            </div>
+          )}
+
           <div className="glass-card p-6 border-white/5 bg-gradient-to-br from-indigo-500/5 to-transparent">
             <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
-              <ExternalLink className="mr-2 text-cyan-400" size={18} /> Doctor's
+              <ExternalLink className="mr-2 text-cyan-400" size={18} /> Doctor&apos;s
               Perspective
             </h3>
             {report.doctorComments ? (

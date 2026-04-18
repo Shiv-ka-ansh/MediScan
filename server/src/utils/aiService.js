@@ -9,11 +9,12 @@ const genAI = process.env.GEMINI_API_KEY
 
 const MODEL_OPTIONS = [
     'gemini-1.5-flash',
-    'gemini-1.5-flash-002',
-    'gemini-2.5-flash',
     'gemini-1.5-flash-latest',
+    'gemini-1.5-flash-002',
     'gemini-1.5-pro',
     'gemini-1.5-pro-002',
+    'gemini-1.5-pro-latest',
+    'gemini-2.0-flash-exp',
     'gemini-pro'
 ];
 
@@ -169,5 +170,66 @@ User question: ${message}`;
             console.error(`Status: ${error.status}, StatusText: ${error.statusText}`);
         }
         throw new Error(`AI Chat failed: ${error.message}`);
+    }
+}
+
+export const SUPPORTED_LANGUAGES = {
+    hi: 'Hindi (हिंदी)',
+    pa: 'Punjabi (ਪੰਜਾਬੀ)',
+    bn: 'Bengali (বাংলা)',
+    te: 'Telugu (తెలుగు)',
+    mr: 'Marathi (मराठी)',
+    ta: 'Tamil (தமிழ்)',
+    gu: 'Gujarati (ગુજરાતી)',
+    kn: 'Kannada (ಕನ್ನಡ)',
+    ur: 'Urdu (اردو)',
+    en: 'English',
+};
+
+export async function translateReport(analysisData, targetLang) {
+    if (!genAI) {
+        throw new Error('GEMINI_API_KEY is not configured on the server.');
+    }
+
+    const langName = SUPPORTED_LANGUAGES[targetLang] || targetLang;
+
+    const prompt = `You are a professional medical translator. Translate the following medical report analysis into ${langName}.
+
+IMPORTANT RULES:
+- Keep all medical terms as accurate as possible in the target language
+- Use easy, patient-friendly language for non-technical explanations
+- Do NOT change the medical meaning or add/remove findings
+- Return a valid JSON object with the SAME structure as the input
+
+Input (in English):
+${JSON.stringify(analysisData, null, 2)}
+
+Return ONLY a valid JSON object with keys: "summary", "abnormalities" (array), "recommendations" (array), "plainEnglish"
+No markdown, no code blocks, no extra text.`;
+
+    try {
+        const result = await generateContentWithFallback(prompt);
+        const response = await result.response;
+        const textResponse = response.text();
+
+        const cleanedText = textResponse
+            .replace(/^```json\n/, '')
+            .replace(/^```\n/, '')
+            .replace(/\n```$/, '')
+            .trim();
+
+        try {
+            return JSON.parse(cleanedText);
+        } catch (parseError) {
+            console.warn('Translation JSON parse failed, attempting extraction:', parseError.message);
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+            throw new Error('Translation response was not valid JSON');
+        }
+    } catch (error) {
+        console.error('Gemini Translation Error:', error.message);
+        throw new Error(`Translation failed: ${error.message}`);
     }
 }
