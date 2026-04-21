@@ -25,10 +25,17 @@ if (!process.env.JWT_SECRET) {
     console.warn('⚠️  Authentication will fail. Please set JWT_SECRET in server/.env');
 }
 
+if (!process.env.OPENROUTER_API_KEY) {
+    console.warn('⚠️  WARNING: OPENROUTER_API_KEY is not set!');
+    console.warn('⚠️  AI features will fail. Please set OPENROUTER_API_KEY in server/.env or Render dashboard');
+}
+
+/*
 if (!process.env.GEMINI_API_KEY) {
     console.warn('⚠️  WARNING: GEMINI_API_KEY is not set!');
     console.warn('⚠️  AI features will fail. Please set GEMINI_API_KEY in server/.env or Render dashboard');
 }
+*/
 
 const app = express();
 
@@ -201,6 +208,21 @@ mongoose
                     initSocketServer(httpServer);
                     console.log('🔌 Socket.io initialized');
 
+                    if (process.env.OPENROUTER_API_KEY) {
+                        try {
+                            console.log('🔍 Checking available OpenRouter models...');
+                            const modelInfo = await listAvailableModels();
+                            if (modelInfo.models && modelInfo.models.length > 0) {
+                                console.log(`✅ OpenRouter connected — ${modelInfo.models.length} models available`);
+                            } else {
+                                console.warn('⚠️  Could not list OpenRouter models. Will use default model.');
+                            }
+                        } catch (error) {
+                            console.warn('⚠️  Could not list OpenRouter models:', error.message);
+                        }
+                    }
+
+                    /*
                     if (process.env.GEMINI_API_KEY) {
                         try {
                             console.log('🔍 Checking available Gemini models...');
@@ -214,6 +236,7 @@ mongoose
                             console.warn('⚠️  Could not list models:', error.message);
                         }
                     }
+                    */
                 });
 
                 httpServer.on('connection', (socket) => {
