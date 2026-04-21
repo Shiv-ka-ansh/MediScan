@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import referenceRoutes from './routes/referenceRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { listAvailableModels } from './utils/aiService.js';
 import { initSocketServer } from './utils/socketService.js';
@@ -81,6 +82,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/reference', referenceRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'MediScan AI Server is running' });

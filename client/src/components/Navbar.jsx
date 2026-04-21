@@ -13,6 +13,7 @@ import {
   UserCircle,
   Menu,
   X,
+  Droplets,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -58,6 +59,12 @@ export const Navbar = () => {
                     className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
                   >
                     AI Assistant
+                  </Link>
+                  <Link
+                    to="/reference-values"
+                    className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
+                  >
+                    Lab Values
                   </Link>
                   {(user.role === "doctor" || user.role === "admin") && (
                     <Link
@@ -173,6 +180,14 @@ export const Navbar = () => {
                 >
                   <MessageSquare size={20} />
                   <span className="font-medium">AI Assistant</span>
+                </Link>
+                <Link
+                  to="/reference-values"
+                  onClick={closeMobileMenu}
+                  className="flex items-center space-x-3 p-3 rounded-xl text-slate-300 hover:text-cyan-400 hover:bg-white/5 transition-all"
+                >
+                  <Droplets size={20} />
+                  <span className="font-medium">Lab Values</span>
                 </Link>
                 {(user.role === "doctor" || user.role === "admin") && (
                   <Link

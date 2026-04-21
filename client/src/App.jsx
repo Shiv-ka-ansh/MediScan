@@ -18,6 +18,7 @@ import { ReportDetail } from "./pages/ReportDetail";
 import { Chat } from "./pages/Chat";
 import { DoctorPanel } from "./pages/DoctorPanel";
 import { Profile } from "./pages/Profile";
+import { ReferenceValues } from "./pages/ReferenceValues";
 
 import Snowfall from "react-snowfall";
 function App() {
@@ -78,7 +79,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Navigate to="/" replace />} />
             <Route
               path="/profile"
               element={
@@ -87,6 +87,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/reference-values"
+              element={
+                <ProtectedRoute>
+                  <ReferenceValues />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </Router>

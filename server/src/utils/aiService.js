@@ -182,6 +182,86 @@ ${JSON.stringify(analysisData, null, 2)}`;
     }
 }
 
+export async function getReferenceData(query) {
+    assertConfigured();
+
+    const system = `You are a medical reference database. When given a test name or category, return ONLY a valid JSON object with NO extra text, NO markdown, NO backticks.
+
+JSON structure:
+{
+  "category": "Category Name",
+  "description": "1-2 line what this tests for in plain English",
+  "color": "#hexcode (pick a distinct medical color, avoid purple)",
+  "tests": [
+    {
+      "name": "Test Name",
+      "unit": "unit",
+      "min": number_or_null,
+      "max": number_or_null,
+      "max_is_infinity": false,
+      "critical_low": number_or_null,
+      "critical_high": number_or_null,
+      "note": "important clinical note or null",
+      "gender_specific": "men/women/all",
+      "what_it_means": "simple 1-line explanation of what this value measures",
+      "low_means": "what low values indicate clinically",
+      "high_means": "what high values indicate clinically"
+    }
+  ],
+  "preparation": "fasting/no fasting/special instructions",
+  "when_to_test": "who should get this tested and when"
+}
+
+Be comprehensive. Include all sub-tests for that category. Use medically accurate reference ranges from WHO/ICMR guidelines. All text must be in English only.`;
+
+    const user = `Give me complete reference values for: ${query}`;
+
+    try {
+        const raw = await chatCompletion(system, user);
+        const cleaned = raw
+            .replace(/^```json\n?/, '')
+            .replace(/^```\n?/, '')
+            .replace(/\n?```$/, '')
+            .trim();
+        return JSON.parse(cleaned);
+    } catch (error) {
+        console.error('getReferenceData Error:', error.message);
+        throw new Error(`Failed to fetch reference data: ${error.message}`);
+    }
+}
+
+export async function checkReferenceValue(testName, value) {
+    assertConfigured();
+
+    const system = `You are a medical AI assistant. Respond ONLY in valid JSON, no markdown, no extra text. All text values must be in English only. No emojis.
+JSON format:
+{
+  "status": "normal|low|high|critical_low|critical_high|borderline_low|borderline_high",
+  "normal_range": "X - Y unit",
+  "unit": "unit",
+  "category": "which test panel this belongs to",
+  "interpretation": "plain 2-line clinical interpretation in English",
+  "action": "recommended next step for patient",
+  "severity_color": "#hexcode matching status severity",
+  "fun_fact": "1 interesting clinical fact about this parameter"
+}`;
+
+    const user = `Test: ${testName}, Value: ${value}. Is this normal?`;
+
+    try {
+        const raw = await chatCompletion(system, user);
+        const cleaned = raw
+            .replace(/^```json\n?/, '')
+            .replace(/^```\n?/, '')
+            .replace(/\n?```$/, '')
+            .trim();
+        return JSON.parse(cleaned);
+    } catch (error) {
+        console.error('checkReferenceValue Error:', error.message);
+        throw new Error(`Failed to check reference value: ${error.message}`);
+    }
+}
+
 export async function listAvailableModels() {
     assertConfigured();
 
