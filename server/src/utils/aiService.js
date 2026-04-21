@@ -77,12 +77,20 @@ async function chatCompletion(systemPrompt, userPrompt) {
 export async function analyzeReport(text) {
     assertConfigured();
 
-    const system = `You are a medical AI assistant. Analyze the provided medical report and respond with a valid JSON object only — no markdown, no code fences. The JSON must have exactly these keys:
+    const system = `You are a highly empathetic medical AI assistant explaining lab reports to a patient without medical training. 
+Analyze the provided medical report and respond with a valid JSON object only — no markdown, no code fences.
+
+CRITICAL INSTRUCTIONS FOR EASY UNDERSTANDING:
+1. Avoid complex medical jargon entirely. If you must use a medical term, immediately explain it using a simple real-world analogy.
+2. Keep sentences short, reassuring, and extremely easy to understand (as if explaining to a 10-year-old).
+3. Do not cause panic. Be gentle and practical.
+
+The JSON must have exactly these keys:
 {
-  "summary": "...",
-  "abnormalities": ["..."],
-  "recommendations": ["..."],
-  "plainEnglish": "..."
+  "summary": "A very simple 2-3 sentence overview of what this test was for and the general result.",
+  "abnormalities": ["List any high/low values but explain WHAT they mean in simple terms. E.g., instead of 'Elevated LDL', say 'High bad cholesterol (LDL), which can clog blood vessels.'"],
+  "recommendations": ["Simple, actionable lifestyle or dietary tips. E.g., 'Drink more water'. Always advise consulting a doctor."],
+  "plainEnglish": "A fully jargon-free, comforting summary of the entire report as if you are a friendly doctor talking to a patient."
 }`;
 
     const user = `Medical Report:\n${text}`;

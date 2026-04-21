@@ -51,7 +51,7 @@ const TRUST_BADGES = [
 const CHIPS = ["CBC Panel", "Lipid Profile", "Thyroid Function", "HbA1c", "Liver Function"];
 
 export const Upload = () => {
-  const [file, setFile]           = useState(null);
+  const [files, setFiles]         = useState([]);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -68,23 +68,30 @@ export const Upload = () => {
     return () => clearInterval(id);
   }, [loading]);
 
-  /* ── File validation (unchanged logic) ── */
-  const processFile = (selectedFile) => {
+  /* ── File validation ── */
+  const processFiles = (selectedFiles) => {
     setError("");
-    if (!selectedFile) return;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+    
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "text/plain"];
-    if (!allowedTypes.includes(selectedFile.type)) {
-      setError("Please upload a PDF, Image (JPG/PNG), or Text file.");
-      return;
+    const validFiles = [];
+    
+    for (const f of selectedFiles) {
+      if (!allowedTypes.includes(f.type)) {
+        setError(`Invalid file type: ${f.name}. Please upload PDF, Image, or Text.`);
+        continue;
+      }
+      if (f.size > 10 * 1024 * 1024) {
+        setError(`File too large: ${f.name}. Maximum size is 10MB.`);
+        continue;
+      }
+      validFiles.push(f);
     }
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError("File size should be less than 10MB.");
-      return;
-    }
-    setFile(selectedFile);
+    
+    setFiles((prev) => [...prev, ...validFiles]);
   };
 
-  const handleFileChange = (e) => processFile(e.target.files[0]);
+  const handleFileChange = (e) => processFiles(Array.from(e.target.files));
 
   /* ── Drag handlers ── */
   const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
@@ -92,26 +99,34 @@ export const Upload = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    processFile(e.dataTransfer.files[0]);
+    processFiles(Array.from(e.dataTransfer.files));
   };
 
-  /* ── Upload (unchanged logic) ── */
+  const removeFile = (indexToRemove) => {
+    setFiles(files.filter((_, i) => i !== indexToRemove));
+  };
+
+  /* ── Upload ── */
   const handleUpload = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setLoading(true);
     setError("");
     try {
-      const data = await uploadReport(file);
-      navigate(`/reports/${data.report.id}`);
+      if (files.length === 1) {
+        const data = await uploadReport(files[0]);
+        navigate(`/reports/${data.report.id}`);
+      } else {
+        for (const f of files) {
+          await uploadReport(f);
+        }
+        navigate('/dashboard'); // Go to dashboard to see all uploaded reports
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to upload report");
+      setError(err.response?.data?.message || "Failed to upload one or more reports");
     } finally {
       setLoading(false);
     }
   };
-
-  const fileMeta = file ? getFileMeta(file.type) : null;
-  const FileIcon = fileMeta?.icon ?? File;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-16">
@@ -140,7 +155,7 @@ export const Upload = () => {
           </div>
         )}
 
-        {!file ? (
+        {!files.length ? (
           /* ── Drop zone ── */
           <div
             onDragOver={handleDragOver}
@@ -154,6 +169,7 @@ export const Upload = () => {
           >
             <input
               type="file"
+              multiple
               onChange={handleFileChange}
               className="absolute inset-0 opacity-0 cursor-pointer"
               accept=".pdf,.jpg,.jpeg,.png,.txt"
@@ -164,7 +180,7 @@ export const Upload = () => {
               </div>
               <div>
                 <p className="text-xl font-outfit font-bold text-white mb-1">
-                  {isDragging ? "Drop to Scan" : "Select Medical File"}
+                  {isDragging ? "Drop to Scan" : "Select Medical Files"}
                 </p>
                 <p className="text-slate-500 text-sm">PDF, JPEG, PNG, or TXT up to 10MB</p>
               </div>
@@ -177,7 +193,7 @@ export const Upload = () => {
               <div className="inline-flex p-3 bg-cyan-400/10 rounded-2xl mb-4">
                 <Loader2 className="text-cyan-400 animate-spin" size={28} />
               </div>
-              <p className="text-white font-outfit font-bold text-lg mb-1">Analyzing Report</p>
+              <p className="text-white font-outfit font-bold text-lg mb-1">Analyzing Reports</p>
             </div>
 
             {/* Progress bar */}
@@ -194,26 +210,50 @@ export const Upload = () => {
             </p>
           </div>
         ) : (
-          /* ── File selected state ── */
-          <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/10">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-xl ${fileMeta.bg}`}>
-                  <FileIcon size={28} className={fileMeta.color} />
-                </div>
-                <div className="overflow-hidden">
-                  <p className="text-white font-bold truncate max-w-[200px] md:max-w-md">{file.name}</p>
-                  <p className="text-slate-500 text-xs mt-0.5">
-                    {fileMeta.label} · {(file.size / (1024 * 1024)).toFixed(2)} MB
-                  </p>
-                </div>
+          /* ── Files selected state ── */
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2 scrollbar-hide">
+              {files.map((f, index) => {
+                const meta = getFileMeta(f.type);
+                const Icon = meta.icon;
+                return (
+                  <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-white/20 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className={`p-2 rounded-lg ${meta.bg}`}>
+                        <Icon size={24} className={meta.color} />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-white font-semibold text-sm truncate max-w-[200px] md:max-w-[300px]">{f.name}</p>
+                        <p className="text-slate-500 text-xs mt-0.5">
+                          {meta.label} · {(f.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1 group">
+                 <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  accept=".pdf,.jpg,.jpeg,.png,.txt"
+                />
+                <Button variant="outline" className="w-full border-dashed border-white/20 text-slate-300 hover:text-white hover:border-cyan-400/50">
+                  <UploadIcon size={16} className="mr-2" />
+                  Add More Files
+                </Button>
               </div>
-              <button
-                onClick={() => setFile(null)}
-                className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors"
-              >
-                <X size={20} />
-              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -228,11 +268,11 @@ export const Upload = () => {
             </div>
 
             <Button
-              className="w-full bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 py-4 text-lg font-semibold transition-all"
+              className="w-full bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 py-4 text-lg font-semibold transition-all shadow-lg shadow-cyan-500/20"
               onClick={handleUpload}
               disabled={loading}
             >
-              Start AI Analysis
+              Start AI Analysis {files.length > 1 ? `(${files.length} files)` : ""}
             </Button>
           </div>
         )}
