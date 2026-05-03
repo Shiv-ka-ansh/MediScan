@@ -236,7 +236,7 @@ export const ReportDetail = () => {
             variant="outline"
             size="sm"
             onClick={handleDownloadPDF}
-            className="border-slate-200 hover:bg-slate-50"
+            className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 transition-all"
           >
             <Download size={16} className="mr-2" /> PDF Report
           </Button>
