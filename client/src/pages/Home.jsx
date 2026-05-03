@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/Button";
+import { Footer } from "../components/Footer";
 import { useState, useEffect } from "react";
 import {
   FileText,
@@ -283,6 +284,7 @@ export const Home = () => {
       </div>
 
 
+      <Footer />
     </div>
   );
 };

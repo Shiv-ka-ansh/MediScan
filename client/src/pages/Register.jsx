@@ -2,19 +2,18 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { register } from "../services/authService";
-import { Button } from "../components/Button";
-import { Input } from "../components/Input";
 import { GoogleAuthButton } from "../components/GoogleAuthButton";
 import {
   Activity,
   Mail,
   Lock,
-  UserPlus,
-  ArrowLeft,
   User,
   Shield,
+  ArrowLeft,
   Loader2,
   ShieldCheck,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -28,6 +27,8 @@ export const Register = () => {
   });
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw]   = useState(false);
+  const [showCpw, setShowCpw] = useState(false);
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ export const Register = () => {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match. Please verify.");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -61,166 +62,152 @@ export const Register = () => {
     }
   };
 
+  const inputCls = "w-full bg-white/[0.03] border border-white/[0.08] rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 focus:bg-white/[0.05] focus:border-cyan-500/40 focus:ring-2 focus:ring-cyan-500/10 hover:border-white/[0.15] outline-none transition-all duration-200";
+
   return (
-    <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center p-4 py-12 isolate overflow-hidden">
+    <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center p-4 py-8 isolate overflow-hidden bg-slate-950">
 
-      {/* Animated orb backgrounds */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/3 translate-y-1/3" />
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-teal-500/5 rounded-full blur-2xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+      {/* Ambient background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[15%] -right-[10%] w-[45%] h-[45%] bg-violet-600/8 rounded-full blur-[140px]" />
+        <div className="absolute -bottom-[15%] -left-[10%] w-[45%] h-[45%] bg-cyan-600/8 rounded-full blur-[140px]" />
+      </div>
 
-      <div className="relative z-10 w-full max-w-lg animate-in fade-in slide-in-from-bottom-6 duration-700">
-        <Link to="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
-          <ArrowLeft className="mr-2" size={18} /> Home
+      <div className="relative z-10 w-full max-w-lg">
+        <Link
+          to="/"
+          className="inline-flex items-center text-slate-400 hover:text-cyan-400 mb-5 transition-colors text-sm"
+        >
+          <ArrowLeft className="mr-1.5" size={15} /> Home
         </Link>
 
-        <div className="glass-card relative overflow-hidden">
-          {/* Gradient top strip */}
-          <div className="h-[3px] w-full bg-gradient-to-r from-violet-500 via-teal-400 to-cyan-500 rounded-t-2xl" />
+        <div className="glass-card rounded-2xl overflow-hidden">
+          {/* Top gradient accent */}
+          <div className="h-[3px] bg-gradient-to-r from-violet-500 via-teal-400 to-cyan-500" />
 
-          {/* Decorative internal glow */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl opacity-50 pointer-events-none" />
-
-          <div className="relative p-10">
-            {/* Brand strip */}
-            <div className="flex flex-col items-center mb-10">
-              <div className="w-14 h-14 bg-gradient-to-br from-teal-400 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg mb-4 ring-1 ring-white/20">
-                <Activity className="text-white" size={28} />
+          <div className="p-7 sm:p-8">
+            {/* Brand header */}
+            <div className="flex flex-col items-center mb-7">
+              <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-violet-500 rounded-xl flex items-center justify-center shadow-lg mb-3 ring-1 ring-white/15">
+                <Activity className="text-white" size={22} />
               </div>
-              <p className="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-1 font-outfit">MediScan</p>
-              <h1 className="text-3xl font-outfit font-bold text-white">Create Identity</h1>
-              <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Initialize Health Neural Link</p>
+              <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-[0.2em] mb-1">MediScan AI</p>
+              <h1 className="text-[22px] font-outfit font-bold text-white leading-tight">Create Account</h1>
+              <p className="text-slate-500 text-xs mt-0.5">Join the smart health platform</p>
             </div>
 
             {/* Error */}
             {error && (
-              <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm font-medium">
+              <div className="mb-5 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 text-xs font-medium flex items-start gap-2">
+                <span className="w-1.5 h-1.5 bg-rose-500 rounded-full mt-1 shrink-0" />
                 {error}
               </div>
             )}
 
-            {/* Role Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-300 font-outfit ml-1 mb-1.5">
-                System Access Role
-              </label>
-              <div className="grid grid-cols-2 gap-4">
+            {/* Role selector */}
+            <div className="mb-5">
+              <label className="block text-xs font-medium text-slate-300 ml-0.5 mb-2">I am a</label>
+              <div className="grid grid-cols-2 gap-3">
                 <RoleButton
                   active={formData.role === "patient"}
                   onClick={() => setFormData({ ...formData, role: "patient" })}
-                  icon={<User size={18} />}
+                  icon={<User size={16} />}
                   label="Patient"
                 />
                 <RoleButton
                   active={formData.role === "doctor"}
                   onClick={() => setFormData({ ...formData, role: "doctor" })}
-                  icon={<Shield size={18} />}
-                  label="Specialist"
+                  icon={<Shield size={16} />}
+                  label="Doctor"
                 />
               </div>
             </div>
 
             <GoogleAuthButton mode="signup" role={formData.role} />
 
-            <div className="relative my-6">
+            {/* Divider */}
+            <div className="relative my-5">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10" />
+                <div className="w-full border-t border-white/[0.06]" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-950/60 text-slate-500 backdrop-blur-sm">or sign up with email</span>
+              <div className="relative flex justify-center">
+                <span className="px-3 text-[11px] text-slate-500 bg-[#0c1222]">or sign up with email</span>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 <div className="relative group">
-                  <User className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={18} />
-                  <Input
-                    label="Full Legal Name"
-                    className="pl-12 input-glow"
-                    placeholder="John Doe"
-                    required
-                    value={formData.name}
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <input type="text" placeholder="Full name" required value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className={inputCls}
                   />
                 </div>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={18} />
-                  <Input
-                    label="Email Identity"
-                    type="email"
-                    className="pl-12 input-glow"
-                    placeholder="john@example.com"
-                    required
-                    value={formData.email}
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <input type="email" placeholder="Email address" required value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className={inputCls}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={18} />
-                  <Input
-                    label="Secure Key"
-                    type="password"
-                    showPasswordToggle
-                    className="pl-12 input-glow"
-                    placeholder="••••••••"
-                    required
-                    value={formData.password}
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <input type={showPw ? "text" : "password"} placeholder="Password" required value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className={inputCls.replace("pr-4", "pr-11")}
                   />
+                  <button type="button" onClick={() => setShowPw(!showPw)} tabIndex={-1}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors z-10">
+                    {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={18} />
-                  <Input
-                    label="Confirm Key"
-                    type="password"
-                    showPasswordToggle
-                    className="pl-12 input-glow"
-                    placeholder="••••••••"
-                    required
-                    value={formData.confirmPassword}
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <input type={showCpw ? "text" : "password"} placeholder="Confirm password" required value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className={inputCls.replace("pr-4", "pr-11")}
                   />
+                  <button type="button" onClick={() => setShowCpw(!showCpw)} tabIndex={-1}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors z-10">
+                    {showCpw ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
                 </div>
               </div>
 
-              <Button
+              <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-teal-600 to-violet-600 hover:from-teal-500 hover:to-violet-500 py-4 flex items-center justify-center transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={loading}
+                className="w-full btn-gradient py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
-                    Creating Account...
+                    <Loader2 className="animate-spin h-4 w-4" />
+                    Creating account...
                   </>
                 ) : (
-                  "Initialize Identity Link"
+                  "Create Account"
                 )}
-              </Button>
+              </button>
             </form>
 
-            <div className="mt-8 text-center border-t border-white/5 pt-6">
-              <p className="text-slate-400 text-sm">
-                Already registered in the system?{" "}
-                <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-bold underline-offset-4 hover:underline transition-all">
-                  Authorize Access
-                </Link>
-              </p>
-            </div>
+            {/* Footer link */}
+            <p className="text-center text-slate-400 text-xs pt-4 mt-5 border-t border-white/5">
+              Already have an account?{" "}
+              <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
 
         {/* Trust line */}
-        <div className="mt-6 text-center">
-          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-4" />
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-            <ShieldCheck size={12} className="text-cyan-400" />
-            <span>Your data is encrypted end-to-end · Trusted by 500+ healthcare professionals</span>
-          </div>
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-[10px] text-slate-500/70">
+          <ShieldCheck size={11} className="text-cyan-500/50" />
+          <span>End-to-end encrypted · Trusted by 500+ healthcare professionals</span>
         </div>
       </div>
     </div>
@@ -232,13 +219,13 @@ const RoleButton = ({ active, onClick, icon, label }) => (
     type="button"
     onClick={onClick}
     className={cn(
-      "flex items-center justify-center space-x-3 p-4 rounded-xl border transition-all duration-300",
+      "flex items-center justify-center space-x-2 p-3 rounded-xl border transition-all duration-200 cursor-pointer",
       active
-        ? "bg-cyan-400/10 border-cyan-400/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.1)]"
-        : "bg-white/5 border-white/5 text-slate-500 hover:bg-white/10 hover:border-white/10"
+        ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.08)]"
+        : "bg-white/[0.03] border-white/[0.08] text-slate-500 hover:bg-white/[0.06] hover:border-white/[0.15]"
     )}
   >
     {icon}
-    <span className="font-outfit font-bold uppercase tracking-wider text-xs">{label}</span>
+    <span className="font-medium text-xs">{label}</span>
   </button>
 );

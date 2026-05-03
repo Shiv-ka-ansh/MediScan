@@ -20,18 +20,12 @@ import { DoctorPanel } from "./pages/DoctorPanel";
 import { Profile } from "./pages/Profile";
 import { ReferenceValues } from "./pages/ReferenceValues";
 
-import Snowfall from "react-snowfall";
+
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen premium-bg">
-          <Snowfall
-            color="#82C3D9"
-            snowflakeCount={150}
-            speed={[0.2, 1.0]}
-            wind={[-0.5, 2.0]}
-          />
+        <div className="min-h-screen bg-slate-950">
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />

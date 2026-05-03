@@ -31,16 +31,16 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 glass-morphism border-b border-white/5">
+      <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2 group">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
-                  <Activity size={24} className="text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-violet-500 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                  <Activity size={22} className="text-white" />
                 </div>
-                <span className="text-xl font-outfit font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                  MediScan AI
+                <span className="text-xl font-outfit font-bold text-white">
+                  MediScan <span className="text-cyan-400">AI</span>
                 </span>
               </Link>
             </div>
@@ -80,10 +80,7 @@ export const Navbar = () => {
               {user ? (
                 <div className="flex items-center space-x-4">
                   <NotificationBell />
-                  <span className="text-slate-400 text-sm hidden lg:block">
-                    Logged in as{" "}
-                    <span className="text-white font-medium">{user.name}</span>
-                  </span>
+
                   <Link
                     to="/profile"
                     className="p-2 text-slate-400 hover:text-white transition-colors flex items-center space-x-2 mr-2"

@@ -39,7 +39,7 @@
   }
 
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl;
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl rounded-2xl;
   }
 
   .glass-morphism {
@@ -51,7 +51,32 @@
   }
 
   .btn-gradient {
-    @apply bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-semibold transition-all duration-300 hover:shadow-btn-glow hover:scale-[1.02] active:scale-[0.98];
+    @apply bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-semibold transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:brightness-110 active:scale-[0.98];
+  }
+
+  .glass-premium {
+    @apply bg-slate-950/40 backdrop-blur-[40px] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)];
+    position: relative;
+  }
+
+  .glass-premium::after {
+    content: '';
+    @apply absolute inset-0 rounded-2xl pointer-events-none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+  }
+
+  .text-glow-violet {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  }
+
+  .input-glow-violet:focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    outline: none;
   }
 }
 
