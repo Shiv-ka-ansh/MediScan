@@ -36,8 +36,13 @@ export const Profile = () => {
     gender: "",
     bloodGroup: "",
     address: "",
+    specialization: "",
+    experience: "",
+    hospitalName: "",
+    registrationNumber: "",
+    bio: "",
   });
-
+ 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -53,6 +58,11 @@ export const Profile = () => {
           gender: user.gender || "",
           bloodGroup: user.bloodGroup || "",
           address: user.address || "",
+          specialization: user.specialization || "",
+          experience: user.experience || "",
+          hospitalName: user.hospitalName || "",
+          registrationNumber: user.registrationNumber || "",
+          bio: user.bio || "",
         });
       } catch (err) {
         console.error("Failed to fetch profile:", err);
@@ -61,16 +71,16 @@ export const Profile = () => {
         setLoading(false);
       }
     };
-
+ 
     fetchProfile();
   }, []);
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError("");
     setSuccess(false);
-
+ 
     try {
       const response = await updateProfile(formData);
       setUser({ ...authUser, ...response.user });
@@ -81,7 +91,7 @@ export const Profile = () => {
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
-        navigate("/dashboard");
+        navigate(authUser?.role === "doctor" ? "/doctor-panel" : "/dashboard");
       }, 1500);
     } catch (err) {
       console.error("Failed to update profile:", err);
@@ -90,12 +100,12 @@ export const Profile = () => {
       setSaving(false);
     }
   };
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -103,7 +113,7 @@ export const Profile = () => {
       </div>
     );
   }
-
+ 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="glass-card overflow-hidden border-slate-200 shadow-md">
@@ -111,7 +121,11 @@ export const Profile = () => {
         <div className="relative h-48 bg-gradient-to-r from-cyan-900 to-slate-900 flex items-center px-8">
           <div className="flex items-center space-x-6">
             <div className="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl">
-              <UserCircle size={64} className="text-cyan-400" />
+              {authUser?.role === "doctor" ? (
+                <Activity size={64} className="text-cyan-400" />
+              ) : (
+                <UserCircle size={64} className="text-cyan-400" />
+              )}
             </div>
             <div>
               <h1 className="text-3xl font-outfit font-bold text-white mb-1">
@@ -123,9 +137,9 @@ export const Profile = () => {
             </div>
           </div>
         </div>
-
+ 
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          {authUser?.role === "patient" && !authUser?.isProfileComplete && (
+          {(authUser?.role === "patient" || authUser?.role === "doctor") && !authUser?.isProfileComplete && (
             <div className="p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-start space-x-3">
               <Activity className="text-cyan-400 mt-0.5" size={18} />
               <div>
@@ -133,19 +147,18 @@ export const Profile = () => {
                   Profile Completion Required
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Please complete your basic medical profile to access the
-                  dashboard and AI insights.
+                  Please complete your professional profile to access all features.
                 </p>
               </div>
             </div>
           )}
-
+ 
           {error && (
             <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm">
               {error}
             </div>
           )}
-
+ 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Basic Info */}
             <div className="space-y-6">
@@ -153,7 +166,7 @@ export const Profile = () => {
                 <User size={18} className="text-sky-500" />
                 <span>Basic Information</span>
               </h3>
-
+ 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                   Full Name
@@ -166,7 +179,7 @@ export const Profile = () => {
                   className=""
                 />
               </div>
-
+ 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                   Email Address
@@ -184,7 +197,7 @@ export const Profile = () => {
                   />
                 </div>
               </div>
-
+ 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
                   <span>Phone Number</span>
@@ -205,98 +218,7 @@ export const Profile = () => {
                   />
                 </div>
               </div>
-            </div>
-
-            {/* Medical Info */}
-            <div className="space-y-6">
-              <h3 className="text-lg font-outfit font-bold text-slate-900 flex items-center space-x-2">
-                <Activity size={18} className="text-sky-500" />
-                <span>Medical Profile</span>
-              </h3>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
-                    <span>Date of Birth</span>
-                    <span className="text-[10px] text-sky-500/50">
-                      Required
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      name="dateOfBirth"
-                      value={formData.dateOfBirth}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer [color-scheme:light]"
-                    />
-                    <Calendar
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
-                      size={16}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
-                    <span>Gender</span>
-                    <span className="text-[10px] text-sky-500/50">
-                      Required
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer"
-                    >
-                      <option value="" className="bg-white">
-                        Select Gender
-                      </option>
-                      <option value="male" className="bg-white">
-                        Male
-                      </option>
-                      <option value="female" className="bg-white">
-                        Female
-                      </option>
-                      <option value="other" className="bg-white">
-                        Other
-                      </option>
-                    </select>
-                    <UserCircle
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
-                      size={16}
-                    />
-                    <ChevronDown
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
-                      size={16}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                  Blood Group
-                </label>
-                <div className="relative">
-                  <Input
-                    name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                    placeholder="e.g. O+ ve"
-                    className="pl-10"
-                  />
-                  <Droplets
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-500"
-                    size={16}
-                  />
-                </div>
-              </div>
-
+ 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                   Address
@@ -315,6 +237,166 @@ export const Profile = () => {
                   />
                 </div>
               </div>
+            </div>
+ 
+            {/* Medical / Professional Info */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-outfit font-bold text-slate-900 flex items-center space-x-2">
+                {authUser?.role === "doctor" ? (
+                  <>
+                    <Activity size={18} className="text-sky-500" />
+                    <span>Professional Details</span>
+                  </>
+                ) : (
+                  <>
+                    <Activity size={18} className="text-sky-500" />
+                    <span>Medical Profile</span>
+                  </>
+                )}
+              </h3>
+ 
+              {authUser?.role === "doctor" ? (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        Specialization
+                      </label>
+                      <Input
+                        name="specialization"
+                        value={formData.specialization}
+                        onChange={handleChange}
+                        placeholder="e.g. Cardiologist"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        Experience (Years)
+                      </label>
+                      <Input
+                        type="number"
+                        name="experience"
+                        value={formData.experience}
+                        onChange={handleChange}
+                        placeholder="e.g. 10"
+                      />
+                    </div>
+                  </div>
+ 
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      Registration Number
+                    </label>
+                    <Input
+                      name="registrationNumber"
+                      value={formData.registrationNumber}
+                      onChange={handleChange}
+                      placeholder="Medical Council Reg No."
+                      required
+                    />
+                  </div>
+ 
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      Clinic / Hospital Name
+                    </label>
+                    <Input
+                      name="hospitalName"
+                      value={formData.hospitalName}
+                      onChange={handleChange}
+                      placeholder="Where do you practice?"
+                    />
+                  </div>
+ 
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      Professional Bio
+                    </label>
+                    <textarea
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                      placeholder="Briefly describe your expertise..."
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
+                        <span>Date of Birth</span>
+                        <span className="text-[10px] text-sky-500/50">Required</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          name="dateOfBirth"
+                          value={formData.dateOfBirth}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer [color-scheme:light]"
+                        />
+                        <Calendar
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                          size={16}
+                        />
+                      </div>
+                    </div>
+ 
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
+                        <span>Gender</span>
+                        <span className="text-[10px] text-sky-500/50">Required</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer"
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                        </select>
+                        <UserCircle
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                          size={16}
+                        />
+                        <ChevronDown
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                          size={16}
+                        />
+                      </div>
+                    </div>
+                  </div>
+ 
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      Blood Group
+                    </label>
+                    <div className="relative">
+                      <Input
+                        name="bloodGroup"
+                        value={formData.bloodGroup}
+                        onChange={handleChange}
+                        placeholder="e.g. O+ ve"
+                        className="pl-10"
+                      />
+                      <Droplets
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-500"
+                        size={16}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

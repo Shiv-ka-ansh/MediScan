@@ -74,6 +74,26 @@ const UserSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        // Doctor specific fields
+        specialization: {
+            type: String,
+            trim: true,
+        },
+        experience: {
+            type: Number,
+        },
+        hospitalName: {
+            type: String,
+            trim: true,
+        },
+        registrationNumber: {
+            type: String,
+            trim: true,
+        },
+        bio: {
+            type: String,
+            trim: true,
+        },
     },
     {
         timestamps: true,
