@@ -73,14 +73,11 @@ const AnimatedNumber = ({ value }) => {
 /* ─── Stat card ──────────────────────────────────────────────────────── */
 const StatCard = ({ label, value, icon, borderColor, glowColor, delay }) => (
   <div
-    className="stat-pop glass-card p-6 flex items-center space-x-4 border-white/5
-                hover:border-white/15 transition-all duration-300 group cursor-default
-                overflow-hidden relative"
+    className="stat-pop glass-card p-6 flex items-center space-x-4 transition-all duration-300 group cursor-default overflow-hidden relative hover:shadow-md"
     style={{ animationDelay: `${delay}ms`, borderLeftWidth: "3px", borderLeftColor: borderColor }}
   >
     <div
-      className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl opacity-0
-                  group-hover:opacity-100 transition-opacity duration-500"
+      className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-500"
       style={{ background: glowColor }}
     />
     <div
@@ -90,7 +87,7 @@ const StatCard = ({ label, value, icon, borderColor, glowColor, delay }) => (
       {icon}
     </div>
     <div className="relative z-10">
-      <div className="text-2xl font-bold font-outfit text-white">
+      <div className="text-2xl font-bold font-outfit text-slate-900">
         <AnimatedNumber value={value} />
       </div>
       <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-0.5">
@@ -126,24 +123,24 @@ const getStatus = (s) => STATUS[s] ?? STATUS.pending;
 
 /* ─── Shimmer skeleton row ───────────────────────────────────────────── */
 const SkeletonRow = () => (
-  <tr className="border-b border-white/5">
+  <tr className="border-b border-slate-100">
     <td className="px-6 py-4">
       <div className="flex items-center space-x-3">
-        <div className="shimmer w-10 h-10 rounded-xl bg-white/5" />
+        <div className="shimmer w-10 h-10 rounded-xl bg-slate-100" />
         <div className="space-y-2">
-          <div className="shimmer h-3 w-36 rounded-md bg-white/5" />
-          <div className="shimmer h-2 w-24 rounded-md bg-white/5" />
+          <div className="shimmer h-3 w-36 rounded-md bg-slate-100" />
+          <div className="shimmer h-2 w-24 rounded-md bg-slate-100" />
         </div>
       </div>
     </td>
     <td className="px-6 py-4">
-      <div className="shimmer h-5 w-20 rounded-full bg-white/5" />
+      <div className="shimmer h-5 w-20 rounded-full bg-slate-100" />
     </td>
     <td className="px-6 py-4">
-      <div className="shimmer h-3 w-24 rounded-md bg-white/5" />
+      <div className="shimmer h-3 w-24 rounded-md bg-slate-100" />
     </td>
     <td className="px-6 py-4 text-right">
-      <div className="shimmer h-7 w-24 rounded-lg bg-white/5 ml-auto" />
+      <div className="shimmer h-7 w-24 rounded-lg bg-slate-100 ml-auto" />
     </td>
   </tr>
 );
@@ -155,10 +152,10 @@ const MobileReportCard = ({ report }) => {
     <div className="glass-card p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 bg-cyan-400/10 rounded-lg flex-shrink-0">
-            <FileText size={16} className="text-cyan-400" />
+          <div className="p-2 bg-sky-50 rounded-lg flex-shrink-0">
+            <FileText size={16} className="text-sky-500" />
           </div>
-          <span className="font-medium text-slate-200 text-sm truncate">{report.fileName}</span>
+          <span className="font-medium text-slate-800 text-sm truncate">{report.fileName}</span>
         </div>
         <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase flex-shrink-0", s.pill)}>
           <span className={cn("w-1.5 h-1.5 rounded-full", s.dot, s.pulse && "animate-pulse")} />
@@ -166,12 +163,12 @@ const MobileReportCard = ({ report }) => {
         </span>
       </div>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+        <div className="flex items-center gap-1.5 text-slate-400 text-xs">
           <Calendar size={12} />
           {new Date(report.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
         </div>
         <Link to={`/reports/${report._id}`}>
-          <Button variant="ghost" size="sm" className="hover:text-cyan-400 text-xs h-7 px-3">
+          <Button variant="ghost" size="sm" className="hover:text-sky-500 text-xs h-7 px-3">
             View <ChevronRight size={13} className="ml-0.5" />
           </Button>
         </Link>
@@ -185,36 +182,32 @@ const EmptyState = () => {
   const chips = ["Blood Test", "X-Ray Report", "Thyroid Panel"];
   return (
     <div className="p-16 text-center flex flex-col items-center">
-      {/* Animated dashed border + floating icon */}
       <div className="relative mb-8">
         <svg width="120" height="120" className="absolute inset-0 -m-2" viewBox="0 0 124 124" fill="none" aria-hidden="true">
           <rect x="2" y="2" width="120" height="120" rx="28"
-            stroke="rgba(34,211,238,0.4)" strokeWidth="2"
+            stroke="rgba(14,165,233,0.4)" strokeWidth="2"
             strokeDasharray="8 6"
             style={{ animation: "spin-slow 12s linear infinite", transformOrigin: "62px 62px" }}
           />
         </svg>
-        <div className="w-28 h-28 bg-white/5 rounded-3xl border border-dashed border-white/10 flex items-center justify-center animate-float">
-          <FileText className="h-12 w-12 text-slate-500" />
+        <div className="w-28 h-28 bg-slate-50 rounded-3xl border border-dashed border-slate-200 flex items-center justify-center animate-float">
+          <FileText className="h-12 w-12 text-slate-300" />
         </div>
       </div>
-
-      <h3 className="text-xl font-outfit font-bold text-white mb-2">No Reports Found</h3>
-      <p className="text-slate-400 mb-8 max-w-sm mx-auto leading-relaxed text-sm">
+      <h3 className="text-xl font-outfit font-bold text-slate-900 mb-2">No Reports Found</h3>
+      <p className="text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed text-sm">
         You have not uploaded any medical reports yet. Start your AI analysis today.
       </p>
       <Link to="/upload">
-        <Button className="bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 px-8 mb-8">
+        <Button className="btn-gradient px-8 mb-8">
           <Plus size={16} className="mr-2" /> Upload First Report
         </Button>
       </Link>
-
-      {/* Suggestion chips */}
       <div className="flex flex-wrap gap-2 justify-center">
-        <span className="text-xs text-slate-500 mr-1 self-center">AI understands:</span>
+        <span className="text-xs text-slate-400 mr-1 self-center">AI understands:</span>
         {chips.map((c) => (
-          <span key={c} className="flex items-center gap-1 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-slate-400">
-            <Plus size={10} className="text-cyan-400" /> {c}
+          <span key={c} className="flex items-center gap-1 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-xs text-slate-500">
+            <Plus size={10} className="text-sky-500" /> {c}
           </span>
         ))}
       </div>
@@ -306,7 +299,7 @@ export const Dashboard = () => {
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-outfit font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-violet-500 animate-gradient-x">
+              <h1 className="text-3xl font-outfit font-bold text-slate-900">
                 Health Dashboard
               </h1>
               <p className="text-slate-500 text-xs font-inter mt-0.5">
@@ -316,7 +309,7 @@ export const Dashboard = () => {
           </div>
           <div className="flex space-x-3">
             <Link to="/profile">
-              <Button variant="outline" className="px-5 py-2.5 border-white/10 hover:bg-white/5 hover:border-white/20 transition-all text-sm">
+              <Button variant="outline" className="px-5 py-2.5 border-slate-300 hover:bg-slate-100 transition-all text-sm text-slate-700">
                 <UserCircle size={16} className="mr-2" /> Edit Profile
               </Button>
             </Link>
@@ -329,15 +322,14 @@ export const Dashboard = () => {
         </div>
 
         {/* ── Welcome Banner ── */}
-        <div className="glass-card p-5 mb-10 relative overflow-hidden"
-             style={{ borderImage: "linear-gradient(90deg,#22d3ee,#8b5cf6) 1" }}>
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-violet-500/5 pointer-events-none" />
+        <div className="glass-card p-5 mb-10 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
           <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <p className="text-xl font-outfit font-bold text-white">
+              <p className="text-xl font-outfit font-bold text-slate-900">
                 {getGreeting()}{user?.name ? `, ${user.name}` : ""}
               </p>
-              <p className="text-xs text-slate-500 font-inter mt-0.5">{formatDate()}</p>
+              <p className="text-xs text-slate-400 font-inter mt-0.5">{formatDate()}</p>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-full self-start sm:self-center">
               <span className="relative flex h-2 w-2">
@@ -359,8 +351,8 @@ export const Dashboard = () => {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
             <input
-              className="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white
-                         placeholder-slate-500 transition-all duration-200 input-glow focus:border-cyan-500/50"
+              className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800
+                         placeholder-slate-400 transition-all duration-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/10 outline-none"
               placeholder="Search reports by filename..."
               value={searchTerm}
               onFocus={() => setSearchFocused(true)}
@@ -384,8 +376,8 @@ export const Dashboard = () => {
                 className={cn(
                   "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide border transition-all duration-200",
                   activeFilter === f
-                    ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-400"
-                    : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
+                    ? "bg-sky-500 border-sky-500 text-white shadow-sm"
+                    : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
                 )}
               >
                 {f}
@@ -404,7 +396,7 @@ export const Dashboard = () => {
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-white/5 bg-white/5">
+                    <tr className="border-b border-slate-100 bg-slate-50/50">
                       {["Report Name", "Analysis Status", "Date", "Actions"].map((h, i) => (
                         <th key={i} className={cn("px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest", i === 3 && "text-right")}>{h}</th>
                       ))}
@@ -437,7 +429,7 @@ export const Dashboard = () => {
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-white/5 bg-white/5">
+                    <tr className="border-b border-slate-100 bg-slate-50/50">
                       <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Report Name</th>
                       <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Analysis Status</th>
                       <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Date</th>
@@ -450,17 +442,17 @@ export const Dashboard = () => {
                       return (
                         <tr
                           key={report._id}
-                          className="hover:bg-white/[0.03] transition-colors group"
+                          className="hover:bg-slate-50 transition-colors group"
                           style={{ borderLeft: `2px solid transparent` }}
                           onMouseEnter={(e) => (e.currentTarget.style.borderLeftColor = s.rowBorder)}
                           onMouseLeave={(e) => (e.currentTarget.style.borderLeftColor = "transparent")}
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-cyan-400/10 rounded-lg group-hover:scale-[1.15] group-hover:bg-cyan-400/20 transition-all duration-200">
-                                <FileText size={16} className="text-cyan-400" />
+                              <div className="p-2 bg-sky-50 rounded-lg group-hover:scale-[1.15] group-hover:bg-sky-100 transition-all duration-200">
+                                <FileText size={16} className="text-sky-500" />
                               </div>
-                              <span className="font-medium text-slate-200 text-sm truncate max-w-[200px]">
+                              <span className="font-medium text-slate-800 text-sm truncate max-w-[200px]">
                                 {report.fileName}
                               </span>
                             </div>
@@ -471,7 +463,7 @@ export const Dashboard = () => {
                               {report.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-slate-400 text-sm">
+                          <td className="px-6 py-4 text-slate-500 text-sm">
                             <div className="flex items-center gap-2">
                               <Calendar size={13} className="text-slate-600" />
                               {new Date(report.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
@@ -479,7 +471,7 @@ export const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <Link to={`/reports/${report._id}`}>
-                              <Button variant="ghost" size="sm" className="hover:text-cyan-400 hover:bg-cyan-400/5 text-xs transition-colors">
+                              <Button variant="ghost" size="sm" className="hover:text-sky-500 hover:bg-sky-50 text-xs transition-colors text-slate-500">
                                 View Details <ChevronRight size={14} className="ml-1" />
                               </Button>
                             </Link>

@@ -111,13 +111,13 @@ export const NotificationBell = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            <h3 className="font-outfit font-bold text-white">Notifications</h3>
+        <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 className="font-outfit font-bold text-slate-900">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-xs text-cyan-400 hover:text-cyan-300"
+                className="text-xs text-sky-500 hover:text-sky-600"
               >
                 Mark all as read
               </button>
@@ -125,7 +125,7 @@ export const NotificationBell = () => {
           </div>
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-slate-500 text-sm">
+              <div className="p-6 text-center text-slate-400 text-sm">
                 No notifications yet
               </div>
             ) : (
@@ -133,17 +133,17 @@ export const NotificationBell = () => {
                 <div
                   key={notification.id || notification._id}
                   className={cn(
-                    "p-4 border-b border-white/5 hover:bg-white/5 transition-colors",
-                    !notification.read && "bg-cyan-400/5"
+                    "p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors",
+                    !notification.read && "bg-sky-50"
                   )}
                 >
-                  <p className="text-sm text-slate-200 font-medium">
+                  <p className="text-sm text-slate-800 font-medium">
                     {notification.title}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
                     {notification.message}
                   </p>
-                  <p className="text-[10px] text-slate-600 mt-2">
+                  <p className="text-[10px] text-slate-400 mt-2">
                     {new Date(notification.createdAt).toLocaleString()}
                   </p>
                 </div>

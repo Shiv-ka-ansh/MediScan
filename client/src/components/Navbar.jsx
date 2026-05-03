@@ -31,7 +31,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -39,8 +39,8 @@ export const Navbar = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-violet-500 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
                   <Activity size={22} className="text-white" />
                 </div>
-                <span className="text-xl font-outfit font-bold text-white">
-                  MediScan <span className="text-cyan-400">AI</span>
+                <span className="text-xl font-outfit font-bold text-slate-900">
+                  MediScan <span className="text-sky-500">AI</span>
                 </span>
               </Link>
             </div>
@@ -50,26 +50,26 @@ export const Navbar = () => {
                 <>
                   <Link
                     to="/dashboard"
-                    className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
+                    className="text-slate-600 hover:text-sky-600 font-medium transition-colors"
                   >
                     Dashboard
                   </Link>
                   <Link
                     to="/chat"
-                    className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
+                    className="text-slate-600 hover:text-sky-600 font-medium transition-colors"
                   >
                     AI Assistant
                   </Link>
                   <Link
                     to="/reference-values"
-                    className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
+                    className="text-slate-600 hover:text-sky-600 font-medium transition-colors"
                   >
                     Lab Values
                   </Link>
                   {(user.role === "doctor" || user.role === "admin") && (
                     <Link
                       to="/doctor-panel"
-                      className="text-slate-300 hover:text-cyan-400 font-medium transition-colors"
+                      className="text-slate-600 hover:text-sky-600 font-medium transition-colors"
                     >
                       Doctor Panel
                     </Link>
@@ -83,10 +83,10 @@ export const Navbar = () => {
 
                   <Link
                     to="/profile"
-                    className="p-2 text-slate-400 hover:text-white transition-colors flex items-center space-x-2 mr-2"
+                    className="p-2 text-slate-500 hover:text-slate-900 transition-colors flex items-center space-x-2 mr-2"
                   >
-                    <UserCircle size={18} className="text-cyan-400" />
-                    <span className="text-sm hidden lg:inline">
+                    <UserCircle size={18} className="text-sky-500" />
+                    <span className="text-sm hidden lg:inline text-slate-700">
                       {user?.name}
                     </span>
                   </Link>
@@ -94,7 +94,7 @@ export const Navbar = () => {
                     variant="outline"
                     size="sm"
                     onClick={handleLogout}
-                    className="border-white/10 text-white hover:bg-white/10"
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100"
                   >
                     Logout
                   </Button>
@@ -105,7 +105,7 @@ export const Navbar = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-slate-300 hover:text-white"
+                      className="text-slate-600 hover:text-slate-900"
                     >
                       Login
                     </Button>
@@ -143,7 +143,7 @@ export const Navbar = () => {
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-slate-900/95 backdrop-blur-xl border-l border-white/10 z-50 transform transition-transform duration-300 sm:hidden ${
+        className={`fixed top-0 right-0 h-full w-72 bg-white border-l border-slate-200 shadow-xl z-50 transform transition-transform duration-300 sm:hidden ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

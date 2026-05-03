@@ -77,21 +77,26 @@ async function chatCompletion(systemPrompt, userPrompt) {
 export async function analyzeReport(text) {
     assertConfigured();
 
-    const system = `You are a highly empathetic medical AI assistant explaining lab reports to a patient without medical training. 
-Analyze the provided medical report and respond with a valid JSON object only — no markdown, no code fences.
+    const system = `You are a highly empathetic medical AI assistant.
+First, determine if the provided text is a medical report, lab result, prescription, or clinical document.
 
-CRITICAL INSTRUCTIONS FOR EASY UNDERSTANDING:
-1. Avoid complex medical jargon entirely. If you must use a medical term, immediately explain it using a simple real-world analogy.
-2. Keep sentences short, reassuring, and extremely easy to understand (as if explaining to a 10-year-old).
-3. Do not cause panic. Be gentle and practical.
-
-The JSON must have exactly these keys:
+If it is NOT a medical report, respond with this JSON structure:
 {
+  "isMedicalReport": false,
+  "message": "This document does not appear to be a medical report. Please upload a valid medical report (e.g., Blood Test, MRI, Prescription)."
+}
+
+If it IS a medical report, analyze it and respond with this JSON structure:
+{
+  "isMedicalReport": true,
   "summary": "A very simple 2-3 sentence overview of what this test was for and the general result.",
   "abnormalities": ["List any high/low values but explain WHAT they mean in simple terms. E.g., instead of 'Elevated LDL', say 'High bad cholesterol (LDL), which can clog blood vessels.'"],
   "recommendations": ["Simple, actionable lifestyle or dietary tips. E.g., 'Drink more water'. Always advise consulting a doctor."],
   "plainEnglish": "A fully jargon-free, comforting summary of the entire report as if you are a friendly doctor talking to a patient."
-}`;
+}
+
+CRITICAL: Respond with a valid JSON object only — no markdown, no code fences.
+Avoid complex medical jargon. explain terms using simple analogies. Keep it reassuring.`;
 
     const user = `Medical Report:\n${text}`;
 
@@ -104,10 +109,18 @@ The JSON must have exactly these keys:
             .trim();
 
         try {
-            return JSON.parse(cleaned);
-        } catch {
+            const parsed = JSON.parse(cleaned);
+            if (parsed.isMedicalReport === false) {
+                throw new Error(parsed.message || 'The uploaded file is not a valid medical report.');
+            }
+            return parsed;
+        } catch (err) {
+            if (err.message.includes('not a valid medical report') || (cleaned.includes('"isMedicalReport": false'))) {
+                throw err;
+            }
             console.warn('analyzeReport: JSON parse failed, returning raw text as summary');
             return {
+                isMedicalReport: true,
                 summary: raw.substring(0, 300),
                 abnormalities: [],
                 recommendations: [],
@@ -116,7 +129,7 @@ The JSON must have exactly these keys:
         }
     } catch (error) {
         console.error('OpenRouter Analysis Error:', error.message);
-        throw new Error(`AI Analysis failed: ${error.message}`);
+        throw error; // Rethrow to let controller handle it
     }
 }
 

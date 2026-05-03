@@ -207,9 +207,9 @@ export const ReportDetail = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
           <Activity
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan-400"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sky-500"
             size={20}
           />
         </div>
@@ -227,7 +227,7 @@ export const ReportDetail = () => {
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
-          className="text-slate-400 hover:text-white"
+          className="text-slate-500 hover:text-slate-900 hover:bg-slate-100"
         >
           <ChevronLeft className="mr-1" size={18} /> Back to Dashboard
         </Button>
@@ -236,7 +236,7 @@ export const ReportDetail = () => {
             variant="outline"
             size="sm"
             onClick={handleDownloadPDF}
-            className="border-white/10 hover:bg-white/5"
+            className="border-slate-200 hover:bg-slate-50"
           >
             <Download size={16} className="mr-2" /> PDF Report
           </Button>
@@ -251,10 +251,10 @@ export const ReportDetail = () => {
       </div>
 
       {/* ── Language Selector ── */}
-      <div className="glass-card p-4 mb-6 border-white/5 flex items-center flex-wrap gap-4">
-        <div className="flex items-center space-x-2 text-cyan-400">
+      <div className="glass-card p-4 mb-6 border-slate-200 flex items-center flex-wrap gap-4">
+        <div className="flex items-center space-x-2 text-sky-600">
           <Languages size={20} />
-          <span className="text-sm font-bold text-slate-200 font-outfit">
+          <span className="text-sm font-bold text-slate-800 font-outfit">
             Report Language
           </span>
         </div>
@@ -268,8 +268,8 @@ export const ReportDetail = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 border 
                 ${
                   selectedLang === code
-                    ? "bg-cyan-400/20 border-cyan-400/50 text-cyan-300"
-                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                    ? "bg-sky-500/10 border-sky-500/30 text-sky-700"
+                    : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 }
                 ${translating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
               `}
@@ -280,7 +280,7 @@ export const ReportDetail = () => {
         </div>
 
         {translating && (
-          <div className="flex items-center space-x-2 text-cyan-400 ml-2">
+          <div className="flex items-center space-x-2 text-sky-600 ml-2">
             <Loader2 size={16} className="animate-spin" />
             <span className="text-xs">Translating...</span>
           </div>
@@ -291,7 +291,7 @@ export const ReportDetail = () => {
         )}
 
         {activeTranslation && !translating && (
-          <span className="text-[10px] text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded-full font-bold uppercase tracking-wider">
+          <span className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full font-bold uppercase tracking-wider">
             ✓ Translated
           </span>
         )}
@@ -307,10 +307,10 @@ export const ReportDetail = () => {
 
             <div className="relative">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="p-2 bg-cyan-400/10 rounded-lg">
-                  <Activity className="text-cyan-400" size={24} />
+                <div className="p-2 bg-sky-500/10 rounded-lg">
+                  <Activity className="text-sky-600" size={24} />
                 </div>
-                <h1 className="text-3xl font-outfit font-bold text-white">
+                <h1 className="text-3xl font-outfit font-bold text-slate-900">
                   {report.fileName}
                 </h1>
               </div>
@@ -330,11 +330,11 @@ export const ReportDetail = () => {
               </div>
 
               <section className="mb-10">
-                <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
-                  <Info className="mr-2 text-cyan-400" size={18} /> Clinical
+                <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4 flex items-center">
+                  <Info className="mr-2 text-sky-600" size={18} /> Clinical
                   Abstract
                 </h3>
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 leading-relaxed text-slate-300 italic">
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 leading-relaxed text-slate-600 italic">
                   &ldquo;{displaySummary}&rdquo;
                 </div>
               </section>
@@ -342,40 +342,40 @@ export const ReportDetail = () => {
               {/* Plain English / Patient-Friendly Explanation */}
               {displayPlainEnglish && (
                 <section className="mb-10">
-                  <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
-                    <Info className="mr-2 text-indigo-400" size={18} /> Plain
+                  <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4 flex items-center">
+                    <Info className="mr-2 text-indigo-500" size={18} /> Plain
                     Language Explanation
                   </h3>
-                  <div className="p-6 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 leading-relaxed text-slate-300">
+                  <div className="p-6 bg-indigo-50/50 rounded-2xl border border-indigo-100 leading-relaxed text-slate-600">
                     {displayPlainEnglish}
                   </div>
                 </section>
               )}
 
               <section>
-                <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4">
+                <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4">
                   Neural Observations
                 </h3>
                 <div className="space-y-4">
                   {displayAbnormalities?.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-start space-x-4 p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl"
+                      className="flex items-start space-x-4 p-4 bg-rose-50 border border-rose-100 rounded-xl"
                     >
                       <AlertTriangle
                         className="text-rose-400 mt-1 flex-shrink-0"
                         size={18}
                       />
-                      <span className="text-slate-300 font-inter">{item}</span>
+                      <span className="text-slate-700 font-inter">{item}</span>
                     </div>
                   ))}
                   {displayAbnormalities?.length === 0 && (
-                    <div className="flex items-start space-x-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                    <div className="flex items-start space-x-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                       <CheckCircle2
-                        className="text-emerald-400 mt-1 flex-shrink-0"
+                        className="text-emerald-500 mt-1 flex-shrink-0"
                         size={18}
                       />
-                      <span className="text-slate-300 font-inter">
+                      <span className="text-slate-700 font-inter">
                         No immediate clinical abnormalities detected by the AI
                         core.
                       </span>
@@ -385,22 +385,21 @@ export const ReportDetail = () => {
               </section>
             </div>
           </div>
-
-          <div className="glass-card p-8 border-white/5">
-            <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4">
+          <div className="glass-card p-8 border-slate-100">
+            <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4">
               Medical Recommendations
             </h3>
             <ul className="grid sm:grid-cols-2 gap-4">
               {displayRecommendations?.map((rec, i) => (
                 <li
                   key={i}
-                  className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/5"
+                  className="flex items-center space-x-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
                 >
                   <CheckCircle2
-                    className="text-cyan-400 flex-shrink-0"
+                    className="text-sky-600 flex-shrink-0"
                     size={16}
                   />
-                  <span className="text-sm text-slate-400">{rec}</span>
+                  <span className="text-sm text-slate-600">{rec}</span>
                 </li>
               ))}
             </ul>
@@ -409,8 +408,8 @@ export const ReportDetail = () => {
 
         {/* Right Column: Original Data & Doctor's Note */}
         <div className="space-y-8">
-          <div className="glass-card p-6 border-white/5">
-            <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4">
+          <div className="glass-card p-6 border-slate-100">
+            <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4">
               AI Verification Score
             </h3>
             <div className="flex flex-col items-center py-6">
@@ -423,7 +422,7 @@ export const ReportDetail = () => {
                     stroke="currentColor"
                     strokeWidth="8"
                     fill="transparent"
-                    className="text-white/5"
+                    className="text-slate-100"
                   />
                   <circle
                     cx="64"
@@ -432,14 +431,14 @@ export const ReportDetail = () => {
                     stroke="currentColor"
                     strokeWidth="8"
                     fill="transparent"
-                    className="text-cyan-400"
+                    className="text-sky-500"
                     strokeDasharray="364.4"
                     strokeDashoffset={364.4 * 0.05}
                     strokeLinecap="round"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-outfit font-bold">95%</span>
+                  <span className="text-3xl font-outfit font-bold text-slate-900">95%</span>
                   <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
                     Confidence
                   </span>
@@ -450,20 +449,19 @@ export const ReportDetail = () => {
 
           {/* View Original File */}
           {report.filePath && (
-            <div className="glass-card p-6 border-white/5">
-              <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
-                <FileText className="mr-2 text-cyan-400" size={18} /> Original
+            <div className="glass-card p-6 border-slate-100">
+              <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4 flex items-center">
+                <FileText className="mr-2 text-sky-600" size={18} /> Original
                 File
               </h3>
 
               {report.fileType === "image" ? (
                 <div className="space-y-3">
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50">
                     <img
                       src={report.filePath}
                       alt={report.fileName}
                       className="w-full object-contain max-h-80 rounded-2xl"
-                      style={{ background: "rgba(255,255,255,0.03)" }}
                     />
                     <div className="absolute inset-0 rounded-2xl pointer-events-none"
                       style={{ boxShadow: "inset 0 0 0 1px rgba(6,182,212,0.08)" }}
@@ -473,7 +471,7 @@ export const ReportDetail = () => {
                     href={report.filePath}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-white/5 hover:bg-cyan-400/10 border border-white/10 hover:border-cyan-400/30 rounded-xl text-xs text-slate-400 hover:text-cyan-300 transition-all duration-200"
+                    className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 rounded-xl text-xs text-slate-500 hover:text-sky-700 transition-all duration-200"
                   >
                     <ExternalLink size={14} />
                     <span>Open full resolution</span>
@@ -484,7 +482,7 @@ export const ReportDetail = () => {
                   href={report.filePath}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-slate-300 hover:text-white transition-all duration-200"
+                  className="flex items-center justify-center space-x-2 w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 hover:text-slate-900 transition-all duration-200"
                 >
                   <ExternalLink size={16} />
                   <span>View on Cloudinary</span>
@@ -493,22 +491,22 @@ export const ReportDetail = () => {
             </div>
           )}
 
-          <div className="glass-card p-6 border-white/5 bg-gradient-to-br from-indigo-500/5 to-transparent">
-            <h3 className="text-lg font-outfit font-bold text-slate-200 mb-4 flex items-center">
-              <ExternalLink className="mr-2 text-cyan-400" size={18} /> Doctor&apos;s
+          <div className="glass-card p-6 border-slate-100 bg-gradient-to-br from-indigo-50 to-transparent">
+            <h3 className="text-lg font-outfit font-bold text-slate-800 mb-4 flex items-center">
+              <ExternalLink className="mr-2 text-sky-600" size={18} /> Doctor&apos;s
               Perspective
             </h3>
             {report.doctorComments ? (
               <div className="space-y-4">
-                <p className="text-sm text-slate-400 leading-relaxed font-inter">
+                <p className="text-sm text-slate-600 leading-relaxed font-inter">
                   {report.doctorComments}
                 </p>
-                <div className="pt-4 border-t border-white/5 flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-cyan-400/20 flex items-center justify-center">
-                    <User size={14} className="text-cyan-400" />
+                <div className="pt-4 border-t border-slate-100 flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center">
+                    <User size={14} className="text-sky-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white uppercase tracking-wider">
+                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                       {report.reviewedBy?.name}
                     </p>
                     <p className="text-[10px] text-slate-500">
@@ -517,8 +515,8 @@ export const ReportDetail = () => {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-6 px-4 bg-white/5 rounded-xl border border-dashed border-white/10">
+             ) : (
+              <div className="text-center py-6 px-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                 <Clock className="mx-auto mb-3 text-slate-600" size={24} />
                 <p className="text-xs text-slate-500">
                   Awaiting specialist verification. AI findings are preliminary.
@@ -533,14 +531,14 @@ export const ReportDetail = () => {
 };
 
 const InfoBadge = ({ icon, label, value }) => (
-  <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
     <div className="flex items-center space-x-2 text-slate-500 mb-1">
       {icon}
       <span className="text-[10px] font-bold uppercase tracking-wider">
         {label}
       </span>
     </div>
-    <div className="text-xs text-slate-200 font-medium truncate">{value}</div>
+    <div className="text-xs text-slate-800 font-medium truncate">{value}</div>
   </div>
 );
 

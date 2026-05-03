@@ -105,9 +105,9 @@ const TestDropdown = ({ value, onChange }) => {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all"
         style={{
-          background: "rgba(255,255,255,0.05)",
-          border: `1px solid ${open ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.1)"}`,
-          color: value ? "#e2e8f0" : "#475569",
+          background: "white",
+          border: `1px solid ${open ? "rgba(99,102,241,0.5)" : "#e2e8f0"}`,
+          color: value ? "#0f172a" : "#64748b",
         }}
       >
         <span className="truncate">{value || "Select a test"}</span>
@@ -126,15 +126,15 @@ const TestDropdown = ({ value, onChange }) => {
         <div
           className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden"
           style={{
-            background: "#0b1526",
-            border: "1px solid rgba(99,102,241,0.25)",
+            background: "white",
+            border: "1px solid #e2e8f0",
             boxShadow: "0 20px 50px rgba(0,0,0,0.7)",
           }}
         >
-          <div className="p-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="p-2" style={{ borderBottom: "1px solid #e2e8f0" }}>
             <div
               className="flex items-center gap-2 rounded-lg px-3 py-2"
-              style={{ background: "rgba(255,255,255,0.04)" }}
+              style={{ background: "#f8fafc" }}
             >
               <Search size={12} style={{ color: "#475569", flexShrink: 0 }} />
               <input
@@ -143,7 +143,7 @@ const TestDropdown = ({ value, onChange }) => {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search test..."
                 className="flex-1 bg-transparent outline-none"
-                style={{ color: "#e2e8f0", fontSize: 12 }}
+                style={{ color: "#0f172a", fontSize: 12 }}
               />
               {search && (
                 <button onClick={() => setSearch("")} style={{ color: "#475569" }}>
@@ -170,7 +170,7 @@ const TestDropdown = ({ value, onChange }) => {
                     color: t === value ? "#818cf8" : "#94a3b8",
                     background: t === value ? "rgba(99,102,241,0.08)" : "transparent",
                   }}
-                  onMouseEnter={(e) => { if (t !== value) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                  onMouseEnter={(e) => { if (t !== value) e.currentTarget.style.background = "#f1f5f9"; }}
                   onMouseLeave={(e) => { if (t !== value) e.currentTarget.style.background = "transparent"; }}
                 >
                   {t}
@@ -181,7 +181,7 @@ const TestDropdown = ({ value, onChange }) => {
           </div>
 
           {search && !COMMON_TESTS.map(t => t.toLowerCase()).includes(search.toLowerCase()) && (
-            <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ borderTop: "1px solid #e2e8f0" }}>
               <button
                 type="button"
                 onClick={() => select(search)}
@@ -212,7 +212,7 @@ const ResultCard = ({ result, onClose }) => {
       <button
         onClick={onClose}
         className="absolute top-3 right-3 rounded-full p-1 transition-all"
-        style={{ background: "rgba(255,255,255,0.06)", color: "#64748b" }}
+        style={{ background: "#e2e8f0", color: "#64748b" }}
       >
         <X size={13} />
       </button>
@@ -230,34 +230,34 @@ const ResultCard = ({ result, onClose }) => {
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div
           className="rounded-xl p-3"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}
         >
           <div style={{ color: "#64748b", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
             Normal Range
           </div>
-          <div style={{ color: "#e2e8f0", fontWeight: 600, fontSize: 13, fontFamily: "monospace" }}>
+          <div style={{ color: "#0f172a", fontWeight: 600, fontSize: 13, fontFamily: "monospace" }}>
             {result.normal_range}
           </div>
         </div>
         <div
           className="rounded-xl p-3"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}
         >
           <div style={{ color: "#64748b", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
             Unit
           </div>
-          <div style={{ color: "#e2e8f0", fontWeight: 600, fontSize: 13 }}>
+          <div style={{ color: "#0f172a", fontWeight: 600, fontSize: 13 }}>
             {result.unit}
           </div>
         </div>
       </div>
 
-      <p style={{ color: "#cbd5e1", fontSize: 13, lineHeight: 1.7 }}>{result.interpretation}</p>
+      <p style={{ color: "#334155", fontSize: 13, lineHeight: 1.7 }}>{result.interpretation}</p>
 
       {result.action && (
         <div
           className="mt-3 rounded-xl px-4 py-2.5 text-xs font-medium"
-          style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${ui.border}`, color: ui.text }}
+          style={{ background: "#f8fafc", border: `1px solid ${ui.border}`, color: ui.text }}
         >
           Recommended Action: {result.action}
         </div>
@@ -266,7 +266,7 @@ const ResultCard = ({ result, onClose }) => {
       {result.fun_fact && (
         <div
           className="mt-2 rounded-xl px-4 py-2.5 text-xs"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", color: "#94a3b8" }}
+          style={{ background: "#f8fafc", border: "1px solid #e2e8f0", color: "#94a3b8" }}
         >
           Clinical Note: {result.fun_fact}
         </div>
@@ -302,7 +302,7 @@ const ValueChecker = () => {
     <div
       className="rounded-2xl p-5"
       style={{
-        background: "rgba(8,16,32,0.95)",
+        background: "white",
         border: "1px solid rgba(99,102,241,0.28)",
         boxShadow: "0 0 50px rgba(99,102,241,0.06)",
       }}
@@ -315,7 +315,7 @@ const ValueChecker = () => {
           <Zap size={16} style={{ color: "#6366f1" }} />
         </div>
         <div>
-          <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 14 }}>Quick Value Checker</div>
+          <div style={{ color: "#0f172a", fontWeight: 700, fontSize: 14 }}>Quick Value Checker</div>
           <div style={{ color: "#94a3b8", fontSize: 12 }}>
             Select a test, enter your value, and get an AI interpretation
           </div>
@@ -341,9 +341,9 @@ const ValueChecker = () => {
             onKeyDown={(e) => e.key === "Enter" && handleCheck()}
             className="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-all"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              color: "#e2e8f0",
+              background: "white",
+              border: "1px solid #e2e8f0",
+              color: "#0f172a",
             }}
           />
         </div>
@@ -386,8 +386,8 @@ const TestRow = ({ test, color, idx }) => {
     <div
       className="rounded-xl overflow-hidden transition-all duration-200"
       style={{
-        background: open ? `${color}06` : "rgba(255,255,255,0.02)",
-        border: `1px solid ${open ? color + "28" : "rgba(255,255,255,0.05)"}`,
+        background: open ? `${color}06` : "#e2e8f0",
+        border: `1px solid ${open ? color + "28" : "#e2e8f0"}`,
       }}
     >
       <button
@@ -396,7 +396,7 @@ const TestRow = ({ test, color, idx }) => {
       >
         <div className="flex-1 min-w-0 pr-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span style={{ color: "#e2e8f0", fontSize: 13, fontWeight: 500 }}>{test.name}</span>
+            <span style={{ color: "#0f172a", fontSize: 13, fontWeight: 500 }}>{test.name}</span>
             {test.gender_specific && test.gender_specific !== "all" && (
               <span
                 className="px-2 py-0.5 rounded-full"
@@ -426,7 +426,7 @@ const TestRow = ({ test, color, idx }) => {
           {test.what_it_means && (
             <div
               className="rounded-lg px-3 py-2 text-xs"
-              style={{ background: `${color}0c`, color: "#cbd5e1", borderLeft: `2px solid ${color}` }}
+              style={{ background: `${color}0c`, color: "#334155", borderLeft: `2px solid ${color}` }}
             >
               <span style={{ color, fontWeight: 600 }}>What it measures: </span>
               {test.what_it_means}
@@ -474,7 +474,7 @@ const CategoryResult = ({ data }) => {
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        background: "rgba(8,16,32,0.95)",
+        background: "white",
         border: `1px solid ${data.color}28`,
         boxShadow: `0 4px 30px ${data.color}08`,
       }}
@@ -492,7 +492,7 @@ const CategoryResult = ({ data }) => {
             <FlaskConical size={17} style={{ color: data.color }} />
           </div>
           <div>
-            <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 14 }}>{data.category}</div>
+            <div style={{ color: "#0f172a", fontWeight: 700, fontSize: 14 }}>{data.category}</div>
             {data.description && (
               <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 1 }}>{data.description}</div>
             )}
@@ -580,13 +580,13 @@ export const ReferenceValues = () => {
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(160deg, #03070f 0%, #080f1e 50%, #03070f 100%)",
+        background: "#F1F5F9",
         fontFamily: "'Inter', sans-serif",
       }}
     >
       <style>{`
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
         ::-webkit-scrollbar-thumb { 
           background: rgba(99, 102, 241, 0.3); 
           border-radius: 10px; 
@@ -598,11 +598,11 @@ export const ReferenceValues = () => {
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute top-0 left-1/4 w-80 h-80 rounded-full opacity-20"
-          style={{ background: "radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%)" }}
         />
         <div
           className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%)" }}
         />
       </div>
 
@@ -617,7 +617,7 @@ export const ReferenceValues = () => {
               <BookOpen size={20} style={{ color: "#818cf8" }} />
             </div>
             <div>
-              <h1 style={{ color: "#f8fafc", fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em" }}>
+              <h1 style={{ color: "#0f172a", fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em" }}>
                 Reference Values
               </h1>
               <p style={{ color: "#94a3b8", fontSize: 13, marginTop: 1 }}>
@@ -633,7 +633,7 @@ export const ReferenceValues = () => {
 
         <div
           className="flex items-center gap-2 rounded-2xl px-4 mb-4"
-          style={{ background: "rgba(8,16,32,0.95)", border: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ background: "white", border: "1px solid #e2e8f0" }}
         >
           <Search size={14} style={{ color: "#475569", flexShrink: 0 }} />
           <input
@@ -642,7 +642,7 @@ export const ReferenceValues = () => {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Search test panel (e.g. CBC, Lipid Profile...)"
             className="flex-1 py-3.5 bg-transparent outline-none text-sm"
-            style={{ color: "#e2e8f0" }}
+            style={{ color: "#0f172a" }}
           />
           <button
             onClick={() => handleSearch()}
@@ -667,12 +667,12 @@ export const ReferenceValues = () => {
               disabled={loading}
               className="px-3 py-1.5 rounded-full text-xs font-medium transition-all disabled:opacity-30"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
                 color: "#94a3b8",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "#cbd5e1"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#0f172a"; e.currentTarget.style.borderColor = "#cbd5e1"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
             >
               {s}
             </button>
@@ -691,7 +691,7 @@ export const ReferenceValues = () => {
         {loading && results.length === 0 && (
           <div
             className="rounded-2xl p-12 text-center"
-            style={{ background: "rgba(8,16,32,0.7)", border: "1px solid rgba(255,255,255,0.04)" }}
+            style={{ background: "white", border: "1px solid #e2e8f0" }}
           >
             <Loader2 size={26} className="animate-spin mx-auto mb-3" style={{ color: "#6366f1" }} />
             <div style={{ color: "#94a3b8", fontSize: 13 }}>Consulting medical database...</div>
@@ -701,10 +701,10 @@ export const ReferenceValues = () => {
         {!loading && results.length === 0 && (
           <div
             className="rounded-2xl p-12 text-center"
-            style={{ background: "rgba(8,16,32,0.7)", border: "1px solid rgba(255,255,255,0.04)" }}
+            style={{ background: "white", border: "1px solid #e2e8f0" }}
           >
             <Activity size={30} className="mx-auto mb-3" style={{ color: "#1e293b" }} />
-            <div style={{ color: "#cbd5e1", fontSize: 14, fontWeight: 600 }}>No results loaded</div>
+            <div style={{ color: "#334155", fontSize: 14, fontWeight: 600 }}>No results loaded</div>
             <div style={{ color: "#64748b", fontSize: 12, marginTop: 3 }}>
               Search for a test panel or use quick access buttons to begin
             </div>

@@ -133,19 +133,19 @@ export const Upload = () => {
 
       {/* Header */}
       <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="inline-flex p-3 bg-cyan-400/10 rounded-2xl mb-4">
-          <Zap className="text-cyan-400" size={32} />
+        <div className="inline-flex p-3 bg-sky-500/10 rounded-2xl mb-4">
+          <Zap className="text-sky-600" size={32} />
         </div>
-        <h1 className="text-4xl font-outfit font-bold text-white mb-3">AI Health Scan</h1>
-        <p className="text-slate-400 font-inter">
+        <h1 className="text-4xl font-outfit font-bold text-slate-900 mb-3">AI Health Scan</h1>
+        <p className="text-slate-500 font-inter">
           Deploy our neural engine to decode your medical records.
         </p>
       </div>
 
       {/* Main glass card */}
       <div className="glass-card p-10 relative overflow-hidden group">
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all duration-700" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-violet-500/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-sky-500/5 rounded-full blur-3xl group-hover:bg-sky-500/10 transition-all duration-700" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Error banner */}
         {error && (
@@ -163,8 +163,8 @@ export const Upload = () => {
             onDrop={handleDrop}
             className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${
               isDragging
-                ? "border-cyan-500/70 bg-cyan-500/10 scale-[1.02]"
-                : "border-white/10 hover:border-cyan-500/50 hover:bg-white/5"
+                ? "border-sky-500 bg-sky-50/50 scale-[1.02]"
+                : "border-slate-200 hover:border-sky-400 hover:bg-slate-50"
             }`}
           >
             <input
@@ -175,11 +175,11 @@ export const Upload = () => {
               accept=".pdf,.jpg,.jpeg,.png,.txt"
             />
             <div className="space-y-4">
-              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                <UploadIcon size={36} className={isDragging ? "text-cyan-400" : "text-slate-400 group-hover:text-cyan-400"} />
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <UploadIcon size={36} className={isDragging ? "text-sky-600" : "text-slate-400 group-hover:text-sky-600"} />
               </div>
               <div>
-                <p className="text-xl font-outfit font-bold text-white mb-1">
+                <p className="text-xl font-outfit font-bold text-slate-900 mb-1">
                   {isDragging ? "Drop to Scan" : "Select Medical Files"}
                 </p>
                 <p className="text-slate-500 text-sm">PDF, JPEG, PNG, or TXT up to 10MB</p>
@@ -190,21 +190,21 @@ export const Upload = () => {
           /* ── Analysis progress ── */
           <div className="space-y-6 animate-in fade-in duration-500 py-4">
             <div className="text-center">
-              <div className="inline-flex p-3 bg-cyan-400/10 rounded-2xl mb-4">
-                <Loader2 className="text-cyan-400 animate-spin" size={28} />
+              <div className="inline-flex p-3 bg-sky-500/10 rounded-2xl mb-4">
+                <Loader2 className="text-sky-600 animate-spin" size={28} />
               </div>
-              <p className="text-white font-outfit font-bold text-lg mb-1">Analyzing Reports</p>
+              <p className="text-slate-900 font-outfit font-bold text-lg mb-1">Analyzing Reports</p>
             </div>
 
             {/* Progress bar */}
-            <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
-              <div className="progress-fill h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+            <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="progress-fill h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 shadow-[0_0_12px_rgba(14,165,233,0.3)]" />
             </div>
 
             {/* Cycling status message */}
             <p
               key={msgIndex}
-              className="msg-fade text-center text-sm text-slate-400 font-inter h-5"
+               className="msg-fade text-center text-sm text-slate-500 font-inter h-5"
             >
               {MESSAGES[msgIndex]}
             </p>
@@ -217,13 +217,13 @@ export const Upload = () => {
                 const meta = getFileMeta(f.type);
                 const Icon = meta.icon;
                 return (
-                  <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-white/20 transition-colors">
+                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
                     <div className="flex items-center space-x-4">
                       <div className={`p-2 rounded-lg ${meta.bg}`}>
                         <Icon size={24} className={meta.color} />
                       </div>
                       <div className="overflow-hidden">
-                        <p className="text-white font-semibold text-sm truncate max-w-[200px] md:max-w-[300px]">{f.name}</p>
+                        <p className="text-slate-900 font-semibold text-sm truncate max-w-[200px] md:max-w-[300px]">{f.name}</p>
                         <p className="text-slate-500 text-xs mt-0.5">
                           {meta.label} · {(f.size / (1024 * 1024)).toFixed(2)} MB
                         </p>
@@ -231,7 +231,7 @@ export const Upload = () => {
                     </div>
                     <button
                       onClick={() => removeFile(index)}
-                      className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-900 transition-colors"
                     >
                       <X size={18} />
                     </button>
@@ -249,7 +249,7 @@ export const Upload = () => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   accept=".pdf,.jpg,.jpeg,.png,.txt"
                 />
-                <Button variant="outline" className="w-full border-dashed border-white/20 text-slate-300 hover:text-white hover:border-cyan-400/50">
+                <Button variant="outline" className="w-full border-dashed border-slate-200 text-slate-600 hover:text-slate-900 hover:border-sky-400">
                   <UploadIcon size={16} className="mr-2" />
                   Add More Files
                 </Button>
@@ -258,17 +258,17 @@ export const Upload = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-start space-x-3 p-4 bg-emerald-400/5 rounded-xl border border-emerald-400/10">
-                <ShieldCheck className="text-emerald-400 mt-1 flex-shrink-0" size={18} />
-                <p className="text-xs text-slate-400">HIPAA compliant data encryption and processing.</p>
+                <ShieldCheck className="text-emerald-500 mt-1 flex-shrink-0" size={18} />
+                <p className="text-xs text-slate-500">HIPAA compliant data encryption and processing.</p>
               </div>
               <div className="flex items-start space-x-3 p-4 bg-cyan-400/5 rounded-xl border border-cyan-400/10">
-                <Zap className="text-cyan-400 mt-1 flex-shrink-0" size={18} />
-                <p className="text-xs text-slate-400">Instant AI analysis with medical-grade precision.</p>
+                <Zap className="text-sky-600 mt-1 flex-shrink-0" size={18} />
+                <p className="text-xs text-slate-500">Instant AI analysis with medical-grade precision.</p>
               </div>
             </div>
 
             <Button
-              className="w-full bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 py-4 text-lg font-semibold transition-all shadow-lg shadow-cyan-500/20"
+              className="w-full btn-gradient py-4 text-lg font-semibold transition-all shadow-lg"
               onClick={handleUpload}
               disabled={loading}
             >
@@ -282,7 +282,7 @@ export const Upload = () => {
       <div className="mt-8 flex flex-wrap items-center gap-2 justify-center">
         <span className="text-xs text-slate-500 font-inter">AI understands:</span>
         {CHIPS.map((c) => (
-          <span key={c} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-slate-400">
+          <span key={c} className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-xs text-slate-600">
             {c}
           </span>
         ))}
@@ -292,12 +292,12 @@ export const Upload = () => {
       <div className="mt-10 grid grid-cols-2 gap-4">
         {TRUST_BADGES.map(({ icon: Icon, title, sub }) => (
           <div key={title} className="glass-card p-4 flex items-start gap-3">
-            <div className="p-2 bg-white/5 rounded-xl flex-shrink-0">
-              <Icon size={16} className="text-cyan-400" />
+            <div className="p-2 bg-slate-50 rounded-xl flex-shrink-0">
+              <Icon size={16} className="text-sky-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white font-outfit">{title}</p>
-              <p className="text-xs text-slate-400 font-inter mt-0.5">{sub}</p>
+              <p className="text-sm font-semibold text-slate-900 font-outfit">{title}</p>
+              <p className="text-xs text-slate-500 font-inter mt-0.5">{sub}</p>
             </div>
           </div>
         ))}

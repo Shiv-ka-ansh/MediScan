@@ -62,15 +62,15 @@ export const Register = () => {
     }
   };
 
-  const inputCls = "w-full bg-white/[0.03] border border-white/[0.08] rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 focus:bg-white/[0.05] focus:border-cyan-500/40 focus:ring-2 focus:ring-cyan-500/10 hover:border-white/[0.15] outline-none transition-all duration-200";
+  const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-sky-400 focus:ring-2 focus:ring-sky-400/10 hover:border-slate-300 outline-none transition-all duration-200";
 
   return (
-    <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center p-4 py-8 isolate overflow-hidden bg-slate-950">
+    <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center p-4 py-8 isolate overflow-hidden" style={{ background: '#F1F5F9' }}>
 
       {/* Ambient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[15%] -right-[10%] w-[45%] h-[45%] bg-violet-600/8 rounded-full blur-[140px]" />
-        <div className="absolute -bottom-[15%] -left-[10%] w-[45%] h-[45%] bg-cyan-600/8 rounded-full blur-[140px]" />
+        <div className="absolute -top-[15%] -right-[10%] w-[45%] h-[45%] bg-indigo-400/10 rounded-full blur-[140px]" />
+        <div className="absolute -bottom-[15%] -left-[10%] w-[45%] h-[45%] bg-sky-400/10 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-lg">
@@ -91,9 +91,9 @@ export const Register = () => {
               <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-violet-500 rounded-xl flex items-center justify-center shadow-lg mb-3 ring-1 ring-white/15">
                 <Activity className="text-white" size={22} />
               </div>
-              <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-[0.2em] mb-1">MediScan AI</p>
-              <h1 className="text-[22px] font-outfit font-bold text-white leading-tight">Create Account</h1>
-              <p className="text-slate-500 text-xs mt-0.5">Join the smart health platform</p>
+              <p className="text-[10px] text-sky-500 font-bold uppercase tracking-[0.2em] mb-1">MediScan AI</p>
+              <h1 className="text-[22px] font-outfit font-bold text-slate-900 leading-tight">Create Account</h1>
+              <p className="text-slate-400 text-xs mt-0.5">Join the smart health platform</p>
             </div>
 
             {/* Error */}
@@ -106,7 +106,7 @@ export const Register = () => {
 
             {/* Role selector */}
             <div className="mb-5">
-              <label className="block text-xs font-medium text-slate-300 ml-0.5 mb-2">I am a</label>
+              <label className="block text-xs font-medium text-slate-600 ml-0.5 mb-2">I am a</label>
               <div className="grid grid-cols-2 gap-3">
                 <RoleButton
                   active={formData.role === "patient"}
@@ -131,21 +131,21 @@ export const Register = () => {
                 <div className="w-full border-t border-white/[0.06]" />
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 text-[11px] text-slate-500 bg-[#0c1222]">or sign up with email</span>
+                <span className="px-3 text-[11px] text-slate-400 bg-slate-100">or sign up with email</span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 <div className="relative group">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors z-10" size={16} />
                   <input type="text" placeholder="Full name" required value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={inputCls}
                   />
                 </div>
                 <div className="relative group">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors z-10" size={16} />
                   <input type="email" placeholder="Email address" required value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className={inputCls}
@@ -195,9 +195,9 @@ export const Register = () => {
             </form>
 
             {/* Footer link */}
-            <p className="text-center text-slate-400 text-xs pt-4 mt-5 border-t border-white/5">
+            <p className="text-center text-slate-500 text-xs pt-4 mt-5 border-t border-slate-100">
               Already have an account?{" "}
-              <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
+              <Link to="/login" className="text-sky-500 hover:text-sky-600 font-semibold transition-colors">
                 Sign In
               </Link>
             </p>
@@ -221,8 +221,8 @@ const RoleButton = ({ active, onClick, icon, label }) => (
     className={cn(
       "flex items-center justify-center space-x-2 p-3 rounded-xl border transition-all duration-200 cursor-pointer",
       active
-        ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.08)]"
-        : "bg-white/[0.03] border-white/[0.08] text-slate-500 hover:bg-white/[0.06] hover:border-white/[0.15]"
+        ? "bg-sky-50 border-sky-400 text-sky-600 shadow-sm"
+        : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300"
     )}
   >
     {icon}

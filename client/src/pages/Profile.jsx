@@ -106,7 +106,7 @@ export const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="glass-card overflow-hidden border-white/5">
+      <div className="glass-card overflow-hidden border-slate-200 shadow-md">
         {/* Profile Header */}
         <div className="relative h-48 bg-gradient-to-r from-cyan-900 to-slate-900 flex items-center px-8">
           <div className="flex items-center space-x-6">
@@ -117,7 +117,7 @@ export const Profile = () => {
               <h1 className="text-3xl font-outfit font-bold text-white mb-1">
                 {formData.name || "User Profile"}
               </h1>
-              <p className="text-cyan-400 font-medium capitalize tracking-wide">
+              <p className="text-sky-300 font-medium capitalize tracking-wide">
                 {authUser?.role} Account
               </p>
             </div>
@@ -149,8 +149,8 @@ export const Profile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Basic Info */}
             <div className="space-y-6">
-              <h3 className="text-lg font-outfit font-bold text-white flex items-center space-x-2">
-                <User size={18} className="text-cyan-400" />
+              <h3 className="text-lg font-outfit font-bold text-slate-900 flex items-center space-x-2">
+                <User size={18} className="text-sky-500" />
                 <span>Basic Information</span>
               </h3>
 
@@ -163,7 +163,7 @@ export const Profile = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John Doe"
-                  className="bg-white/5 border-white/10"
+                  className=""
                 />
               </div>
 
@@ -176,7 +176,7 @@ export const Profile = () => {
                     name="email"
                     value={formData.email}
                     disabled
-                    className="bg-white/5 border-white/10 opacity-60 cursor-not-allowed pl-10"
+                    className="bg-slate-50 opacity-60 cursor-not-allowed pl-10"
                   />
                   <Mail
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
@@ -188,7 +188,7 @@ export const Profile = () => {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
                   <span>Phone Number</span>
-                  <span className="text-[10px] text-cyan-400/50">Required</span>
+                  <span className="text-[10px] text-sky-500/50">Required</span>
                 </label>
                 <div className="relative">
                   <Input
@@ -197,7 +197,7 @@ export const Profile = () => {
                     onChange={handleChange}
                     placeholder="+91 9876543210"
                     required
-                    className="bg-white/5 border-white/10 pl-10"
+                    className="pl-10"
                   />
                   <Phone
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
@@ -209,8 +209,8 @@ export const Profile = () => {
 
             {/* Medical Info */}
             <div className="space-y-6">
-              <h3 className="text-lg font-outfit font-bold text-white flex items-center space-x-2">
-                <Activity size={18} className="text-cyan-400" />
+              <h3 className="text-lg font-outfit font-bold text-slate-900 flex items-center space-x-2">
+                <Activity size={18} className="text-sky-500" />
                 <span>Medical Profile</span>
               </h3>
 
@@ -218,7 +218,7 @@ export const Profile = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
                     <span>Date of Birth</span>
-                    <span className="text-[10px] text-cyan-400/50">
+                    <span className="text-[10px] text-sky-500/50">
                       Required
                     </span>
                   </label>
@@ -229,7 +229,7 @@ export const Profile = () => {
                       value={formData.dateOfBirth}
                       onChange={handleChange}
                       required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none cursor-pointer [color-scheme:dark]"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer [color-scheme:light]"
                     />
                     <Calendar
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
@@ -241,7 +241,7 @@ export const Profile = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center justify-between">
                     <span>Gender</span>
-                    <span className="text-[10px] text-cyan-400/50">
+                    <span className="text-[10px] text-sky-500/50">
                       Required
                     </span>
                   </label>
@@ -251,18 +251,18 @@ export const Profile = () => {
                       value={formData.gender}
                       onChange={handleChange}
                       required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none cursor-pointer"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 appearance-none cursor-pointer"
                     >
-                      <option value="" className="bg-slate-900">
+                      <option value="" className="bg-white">
                         Select Gender
                       </option>
-                      <option value="male" className="bg-slate-900">
+                      <option value="male" className="bg-white">
                         Male
                       </option>
-                      <option value="female" className="bg-slate-900">
+                      <option value="female" className="bg-white">
                         Female
                       </option>
-                      <option value="other" className="bg-slate-900">
+                      <option value="other" className="bg-white">
                         Other
                       </option>
                     </select>
@@ -288,7 +288,7 @@ export const Profile = () => {
                     value={formData.bloodGroup}
                     onChange={handleChange}
                     placeholder="e.g. O+ ve"
-                    className="bg-white/5 border-white/10 pl-10"
+                    className="pl-10"
                   />
                   <Droplets
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-500"
@@ -307,7 +307,7 @@ export const Profile = () => {
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="Street, City, State"
-                    className="bg-white/5 border-white/10 pl-10"
+                    className="pl-10"
                   />
                   <MapPin
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
@@ -318,7 +318,7 @@ export const Profile = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-8 border-t border-white/5">
+          <div className="flex items-center justify-between pt-8 border-t border-slate-100">
             <div className="flex items-center space-x-2">
               {success && (
                 <span className="text-emerald-400 text-sm font-medium flex items-center">
@@ -331,7 +331,7 @@ export const Profile = () => {
             <Button
               type="submit"
               disabled={saving}
-              className="btn-gradient px-12 py-3 h-auto"
+              className="btn-gradient shadow-md hover:shadow-lg px-12 py-3 h-auto"
             >
               {saving ? (
                 <>

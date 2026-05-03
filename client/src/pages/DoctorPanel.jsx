@@ -100,11 +100,11 @@ export const DoctorPanel = () => {
       <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="flex items-center justify-between gap-6 mb-3">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-cyan-400/10 rounded-2xl border border-cyan-400/20 shadow-lg shadow-cyan-500/10">
-              <Stethoscope className="text-cyan-400" size={32} />
+            <div className="p-3 bg-sky-500/10 rounded-2xl border border-sky-500/20 shadow-lg shadow-sky-500/5">
+              <Stethoscope className="text-sky-600" size={32} />
             </div>
             <div>
-              <h1 className="text-3xl font-outfit font-bold text-white">
+              <h1 className="text-3xl font-outfit font-bold text-slate-900">
                 Clinical Verification Console
               </h1>
               <p className="text-slate-500 text-sm uppercase tracking-widest font-bold">
@@ -115,7 +115,7 @@ export const DoctorPanel = () => {
           <Link to="/profile">
             <Button
               variant="outline"
-              className="px-6 py-2.5 border-white/10 hover:bg-white/5"
+              className="px-6 py-2.5 border-slate-200 hover:bg-slate-50"
             >
               <UserCircle size={18} className="mr-2" />
               Edit Profile
@@ -131,8 +131,8 @@ export const DoctorPanel = () => {
           className={cn(
             "px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2",
             activeTab === "pending"
-              ? "bg-cyan-400/10 text-cyan-400 border border-cyan-400/30"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "bg-sky-500/10 text-sky-700 border border-sky-500/30"
+              : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
           <Clock size={18} />
@@ -143,8 +143,8 @@ export const DoctorPanel = () => {
           className={cn(
             "px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2",
             activeTab === "history"
-              ? "bg-cyan-400/10 text-cyan-400 border border-cyan-400/30"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "bg-sky-500/10 text-sky-700 border border-sky-500/30"
+              : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
           )}
         >
           <History size={18} />
@@ -156,9 +156,9 @@ export const DoctorPanel = () => {
       {activeTab === "pending" && (
         <>
           {reports.length === 0 ? (
-            <div className="glass-card p-20 text-center border-white/5">
-              <CheckCircle className="h-16 w-16 text-emerald-400 mx-auto mb-6 opacity-50" />
-              <h3 className="text-2xl font-outfit font-bold text-white mb-2">
+            <div className="glass-card p-20 text-center border-slate-100">
+              <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-6 opacity-50" />
+              <h3 className="text-2xl font-outfit font-bold text-slate-900 mb-2">
                 Queue Empty
               </h3>
               <p className="text-slate-400 max-w-sm mx-auto">
@@ -173,12 +173,12 @@ export const DoctorPanel = () => {
                   placeholder="Filter reports by filename..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
-                  className="flex-1 bg-white/5 border-white/10"
+                  className="flex-1 bg-white border-slate-200"
                 />
                 <Button
                   variant="outline"
                   onClick={() => setFilterTerm("")}
-                  className="border-white/10 hover:bg-white/5"
+                  className="border-slate-200 hover:bg-slate-50"
                 >
                   Clear
                 </Button>
@@ -199,18 +199,18 @@ export const DoctorPanel = () => {
                         key={report._id}
                         onClick={() => setSelectedReport(report)}
                         className={cn(
-                          "glass-card p-6 cursor-pointer transition-all duration-300 border-white/5 relative group",
+                          "glass-card p-6 cursor-pointer transition-all duration-300 border-slate-100 relative group",
                           selectedReport?._id === report._id
-                            ? "bg-white/10 border-cyan-500/50 shadow-cyan-500/10"
-                            : "hover:bg-white/5"
+                            ? "bg-sky-50 border-sky-500/30 shadow-sky-500/5"
+                            : "hover:bg-slate-50"
                         )}
                       >
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-white/5 rounded-lg group-hover:scale-110 transition-transform">
-                              <FileText size={20} className="text-slate-400" />
+                            <div className="p-2 bg-slate-100 rounded-lg group-hover:scale-110 transition-transform">
+                              <FileText size={20} className="text-slate-500" />
                             </div>
-                            <h3 className="text-lg font-outfit font-bold text-slate-200">
+                            <h3 className="text-lg font-outfit font-bold text-slate-800">
                               {report.fileName}
                             </h3>
                           </div>
@@ -230,7 +230,7 @@ export const DoctorPanel = () => {
                           </div>
                         </div>
 
-                        <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed italic">
+                        <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed italic">
                           "{report.aiSummary}"
                         </p>
                         <div className="mt-4 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
@@ -239,11 +239,11 @@ export const DoctorPanel = () => {
                               e.stopPropagation();
                               handleViewFile(report);
                             }}
-                            className="text-slate-400 text-xs font-bold uppercase tracking-wider flex items-center hover:text-cyan-400"
+                            className="text-slate-500 text-xs font-bold uppercase tracking-wider flex items-center hover:text-sky-600"
                           >
                             <Eye size={14} className="mr-1" /> View File
                           </button>
-                          <span className="text-cyan-400 text-xs font-bold uppercase tracking-wider flex items-center">
+                          <span className="text-sky-600 text-xs font-bold uppercase tracking-wider flex items-center">
                             Expand Review{" "}
                             <ChevronRight size={14} className="ml-1" />
                           </span>
@@ -255,9 +255,9 @@ export const DoctorPanel = () => {
                 {/* Review Section */}
                 <div className="lg:col-span-7">
                   {selectedReport ? (
-                    <div className="glass-card p-8 sticky top-8 border-white/5 animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
-                      <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                        <h2 className="text-2xl font-outfit font-bold text-white">
+                    <div className="glass-card p-8 sticky top-8 border-slate-200 animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-6">
+                        <h2 className="text-2xl font-outfit font-bold text-slate-900">
                           Detailed Review
                         </h2>
                         <span className="text-xs text-slate-500 font-inter">
@@ -268,18 +268,17 @@ export const DoctorPanel = () => {
                       {/* View Original File Button / Inline Image Preview */}
                       {selectedReport.fileType === "image" && selectedReport.filePath ? (
                         <div className="space-y-3">
-                          <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest flex items-center">
-                            <span className="p-1.5 bg-white/5 rounded-md mr-2">
-                              <Eye size={14} className="text-cyan-400" />
+                          <h3 className="text-sm font-outfit font-bold text-slate-700 uppercase tracking-widest flex items-center">
+                            <span className="p-1.5 bg-slate-100 rounded-md mr-2">
+                              <Eye size={14} className="text-sky-600" />
                             </span>
                             Uploaded Image
                           </h3>
-                          <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                          <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50">
                             <img
                               src={selectedReport.filePath}
                               alt={selectedReport.fileName}
                               className="w-full object-contain max-h-72 rounded-2xl"
-                              style={{ background: "rgba(255,255,255,0.03)" }}
                             />
                             <div
                               className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -290,7 +289,7 @@ export const DoctorPanel = () => {
                             href={selectedReport.filePath}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-white/5 hover:bg-cyan-400/10 border border-white/10 hover:border-cyan-400/30 rounded-xl text-xs text-slate-400 hover:text-cyan-300 transition-all duration-200"
+                            className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 rounded-xl text-xs text-slate-600 hover:text-sky-700 transition-all duration-200"
                           >
                             <Eye size={13} className="mr-1" />
                             <span>Open full resolution</span>
@@ -302,7 +301,7 @@ export const DoctorPanel = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleViewFile(selectedReport)}
-                            className="border-white/10 hover:bg-white/5"
+                            className="border-slate-200 hover:bg-slate-50"
                           >
                             <Eye size={16} className="mr-2" /> View Uploaded File
                           </Button>
@@ -313,10 +312,10 @@ export const DoctorPanel = () => {
                         <ReviewSection
                           title="AI Synthesis"
                           icon={
-                            <Activity className="text-cyan-400" size={16} />
+                            <Activity className="text-sky-600" size={16} />
                           }
                         >
-                          <p className="text-sm text-slate-400 leading-relaxed italic">
+                          <p className="text-sm text-slate-600 leading-relaxed italic">
                             "{selectedReport.aiSummary}"
                           </p>
                         </ReviewSection>
@@ -351,8 +350,8 @@ export const DoctorPanel = () => {
                           </div>
                         </ReviewSection>
 
-                        <div className="pt-6 border-t border-white/5 space-y-4">
-                          <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest">
+                        <div className="pt-6 border-t border-slate-100 space-y-4">
+                          <h3 className="text-sm font-outfit font-bold text-slate-700 uppercase tracking-widest">
                             Medical Comments
                           </h3>
                           <Input
@@ -361,7 +360,7 @@ export const DoctorPanel = () => {
                             placeholder="Neural signatures verified. Patient status stable..."
                             multiline
                             rows={4}
-                            className="bg-white/5 border-white/10"
+                            className="bg-white border-slate-200"
                           />
                         </div>
                       </div>
@@ -369,7 +368,7 @@ export const DoctorPanel = () => {
                       <div className="grid grid-cols-2 gap-4 pt-4">
                         <Button
                           variant="danger"
-                          className="py-6 rounded-2xl border-rose-500/30 text-rose-500 hover:bg-rose-500 hover:text-white"
+                          className="py-6 rounded-2xl border-rose-200 text-rose-600 hover:bg-rose-600 hover:text-white"
                           onClick={() => handleReview("rejected")}
                           disabled={reviewing}
                         >
@@ -387,10 +386,10 @@ export const DoctorPanel = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="glass-card p-12 text-center border-white/5 bg-white/5 flex flex-col items-center justify-center h-full min-h-[400px]">
-                      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <div className="glass-card p-12 text-center border-slate-200 bg-slate-50 flex flex-col items-center justify-center h-full min-h-[400px]">
+                      <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6">
                         <ChevronRight
-                          className="text-slate-600 rotate-90"
+                          className="text-slate-400 rotate-90"
                           size={32}
                         />
                       </div>
@@ -408,11 +407,11 @@ export const DoctorPanel = () => {
 
       {/* History Tab */}
       {activeTab === "history" && (
-        <div className="glass-card overflow-hidden border-white/5">
+        <div className="glass-card overflow-hidden border-slate-200">
           {reviewedReports.length === 0 ? (
             <div className="p-20 text-center">
-              <History className="h-16 w-16 text-slate-600 mx-auto mb-6" />
-              <h3 className="text-2xl font-outfit font-bold text-white mb-2">
+              <History className="h-16 w-16 text-slate-300 mx-auto mb-6" />
+              <h3 className="text-2xl font-outfit font-bold text-slate-900 mb-2">
                 No Review History
               </h3>
               <p className="text-slate-400 max-w-sm mx-auto">
@@ -423,7 +422,7 @@ export const DoctorPanel = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-white/5 bg-white/5">
+                  <tr className="border-b border-slate-100 bg-slate-50">
                     <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
                       Report Name
                     </th>
@@ -441,18 +440,18 @@ export const DoctorPanel = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {reviewedReports.map((report) => (
                     <tr
                       key={report._id}
-                      className="hover:bg-white/5 transition-colors"
+                      className="hover:bg-slate-50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-cyan-400/10 rounded-lg">
-                            <FileText size={18} className="text-cyan-400" />
+                          <div className="p-2 bg-sky-500/10 rounded-lg">
+                            <FileText size={18} className="text-sky-600" />
                           </div>
-                          <span className="font-medium text-slate-200">
+                          <span className="font-medium text-slate-800">
                             {report.fileName}
                           </span>
                         </div>
@@ -465,8 +464,8 @@ export const DoctorPanel = () => {
                           className={cn(
                             "px-3 py-1 rounded-full text-xs font-bold border",
                             report.status === "approved"
-                              ? "text-emerald-400 bg-emerald-400/10 border-emerald-400/20"
-                              : "text-rose-400 bg-rose-400/10 border-rose-400/20"
+                              ? "text-emerald-600 bg-emerald-50 border-emerald-200"
+                              : "text-rose-600 bg-rose-50 border-rose-200"
                           )}
                         >
                           {report.status?.toUpperCase()}
@@ -482,7 +481,7 @@ export const DoctorPanel = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewFile(report)}
-                          className="hover:text-cyan-400"
+                          className="hover:text-sky-600"
                         >
                           <Eye size={16} className="mr-1" /> View File
                         </Button>
@@ -501,8 +500,8 @@ export const DoctorPanel = () => {
 
 const ReviewSection = ({ title, icon, children }) => (
   <div className="space-y-3">
-    <h3 className="text-sm font-outfit font-bold text-slate-300 uppercase tracking-widest flex items-center">
-      <span className="p-1.5 bg-white/5 rounded-md mr-2">{icon}</span>
+    <h3 className="text-sm font-outfit font-bold text-slate-700 uppercase tracking-widest flex items-center">
+      <span className="p-1.5 bg-slate-100 rounded-md mr-2">{icon}</span>
       {title}
     </h3>
     {children}

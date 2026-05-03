@@ -57,12 +57,21 @@ export const uploadReport = async (req, res) => {
             console.log('AI Analysis Completed Successfully');
         } catch (error) {
             console.error('AI Analysis Error:', error.message);
-            // Clean up Cloudinary file on AI failure too
+            
+            // Clean up Cloudinary file on AI failure
             await deleteFromCloudinary(cloudinaryPublicId, fileTypeCategory === 'image' ? 'image' : 'raw').catch(() => {});
-            res.status(500).json({
-                message: 'Failed to analyze report with AI',
-                error: error.message,
-            });
+
+            // If it's a validation error (not a medical report), return 400
+            if (error.message.includes('not a valid medical report') || error.message.includes('not appear to be a medical report')) {
+                res.status(400).json({
+                    message: error.message,
+                });
+            } else {
+                res.status(500).json({
+                    message: 'Failed to analyze report with AI',
+                    error: error.message,
+                });
+            }
             return;
         }
 

@@ -46,11 +46,11 @@ export const ResetPassword = () => {
   if (!token) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
-        <div className="glass-card p-10 text-center max-w-md">
-          <h2 className="text-2xl font-outfit font-bold text-white mb-4">
+        <div className="glass-card p-10 text-center max-w-md border-slate-200">
+          <h2 className="text-2xl font-outfit font-bold text-slate-900 mb-4">
             Invalid Reset Link
           </h2>
-          <p className="text-slate-400 mb-6">
+          <p className="text-slate-500 mb-6">
             This password reset link is invalid or has expired.
           </p>
           <Link to="/forgot-password">
@@ -65,14 +65,14 @@ export const ResetPassword = () => {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
         <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-700">
-          <div className="glass-card p-10 text-center">
-            <div className="w-16 h-16 bg-emerald-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="text-emerald-400" size={32} />
+          <div className="glass-card p-10 text-center border-slate-100">
+            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="text-emerald-600" size={32} />
             </div>
-            <h2 className="text-2xl font-outfit font-bold text-white mb-2">
+            <h2 className="text-2xl font-outfit font-bold text-slate-900 mb-2">
               Password Reset Successful
             </h2>
-            <p className="text-slate-400 mb-6">Redirecting you to login...</p>
+            <p className="text-slate-500 mb-6">Redirecting you to login...</p>
           </div>
         </div>
       </div>
@@ -84,20 +84,20 @@ export const ResetPassword = () => {
       <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-700">
         <Link
           to="/login"
-          className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
+          className="inline-flex items-center text-slate-500 hover:text-slate-900 mb-8 transition-colors"
         >
           <ArrowLeft className="mr-2" size={18} /> Back to Login
         </Link>
 
-        <div className="glass-card p-10 relative overflow-hidden">
-          <div className="absolute -top-24 -left-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl opacity-50" />
+        <div className="glass-card p-10 relative overflow-hidden border-slate-200">
+          <div className="absolute -top-24 -left-24 w-64 h-64 bg-sky-500/5 rounded-full blur-3xl opacity-50" />
 
           <div className="relative">
             <div className="flex flex-col items-center mb-10">
-              <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-2xl flex items-center justify-center shadow-lg mb-4 ring-1 ring-white/20">
+              <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg mb-4 ring-1 ring-slate-200/50">
                 <Activity className="text-white" size={32} />
               </div>
-              <h1 className="text-3xl font-outfit font-bold text-white">
+              <h1 className="text-3xl font-outfit font-bold text-slate-900">
                 New Password
               </h1>
               <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">
@@ -114,7 +114,7 @@ export const ResetPassword = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="relative group">
                 <Lock
-                  className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10"
+                  className="absolute left-4 top-11 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors z-10"
                   size={18}
                 />
                 <Input
@@ -130,7 +130,7 @@ export const ResetPassword = () => {
 
               <div className="relative group">
                 <Lock
-                  className="absolute left-4 top-11 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors z-10"
+                  className="absolute left-4 top-11 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors z-10"
                   size={18}
                 />
                 <Input

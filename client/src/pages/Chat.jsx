@@ -86,17 +86,17 @@ export const Chat = () => {
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 h-[calc(100vh-80px)] py-6 flex flex-col">
-      <div className="glass-card flex-1 flex flex-col overflow-hidden border-white/5 relative">
+      <div className="glass-card flex-1 flex flex-col overflow-hidden border-slate-200 relative">
         {/* Header */}
-        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/5">
+        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-emerald-400 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <div className="w-12 h-12 bg-gradient-to-br from-sky-400 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-500/10">
               <Bot className="text-white" size={28} />
             </div>
             <div>
-              <h1 className="text-xl font-outfit font-bold text-white flex items-center">
+              <h1 className="text-xl font-outfit font-bold text-slate-900 flex items-center">
                 Health Assistant{" "}
-                <Sparkles className="ml-2 text-cyan-400" size={16} />
+                <Sparkles className="ml-2 text-sky-500" size={16} />
               </h1>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
                 Neural Link Active
@@ -137,14 +137,14 @@ export const Chat = () => {
                   className={cn(
                     "w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center mt-auto mb-1",
                     message.role === "user"
-                      ? "bg-white/10"
-                      : "bg-cyan-400/10 border border-cyan-400/20"
+                      ? "bg-slate-100"
+                      : "bg-sky-100 border border-sky-200"
                   )}
                 >
                   {message.role === "user" ? (
                     <UserIcon size={16} className="text-slate-400" />
                   ) : (
-                    <Bot size={16} className="text-cyan-400" />
+                    <Bot size={16} className="text-sky-600" />
                   )}
                 </div>
 
@@ -152,8 +152,8 @@ export const Chat = () => {
                   className={cn(
                     "relative p-4 rounded-2xl",
                     message.role === "user"
-                      ? "bg-gradient-to-br from-cyan-500 to-teal-600 text-white font-medium shadow-lg shadow-cyan-500/10 rounded-tr-none"
-                      : "bg-white/5 border border-white/5 text-slate-200 rounded-tl-none"
+                      ? "bg-gradient-to-br from-sky-500 to-indigo-600 text-white font-medium shadow-md shadow-sky-500/10 rounded-tr-none"
+                      : "bg-slate-100 border border-slate-200/50 text-slate-800 rounded-tl-none"
                   )}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -177,12 +177,12 @@ export const Chat = () => {
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white/5 border border-white/5 rounded-2xl rounded-tl-none p-4 flex items-center space-x-3">
-                <Bot size={16} className="text-cyan-400 animate-pulse" />
+              <div className="bg-slate-100 border border-slate-200 rounded-2xl rounded-tl-none p-4 flex items-center space-x-3">
+                <Bot size={16} className="text-sky-600 animate-pulse" />
                 <div className="flex space-x-1">
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-bounce"></div>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@ export const Chat = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-6 bg-white/5 border-t border-white/5">
+        <div className="p-6 bg-slate-50 border-t border-slate-100">
           <form onSubmit={handleSubmit} className="flex items-center space-x-4">
             <div className="flex space-x-2">
               <button
@@ -206,7 +206,7 @@ export const Chat = () => {
                     },
                   ]);
                 }}
-                className="p-2 text-slate-500 hover:text-white transition-colors"
+                className="p-2 text-slate-400 hover:text-slate-900 transition-colors"
                 title="New Chat"
               >
                 <PlusCircle size={24} />
@@ -217,13 +217,13 @@ export const Chat = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything about your health..."
-                className="pr-12 bg-white/5 border-white/10 focus:bg-white/10"
+                className="pr-12 bg-white border-slate-200 focus:border-sky-400"
                 disabled={loading}
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-cyan-400 hover:bg-cyan-300 text-slate-900 rounded-lg transition-all disabled:opacity-50 disabled:hover:bg-cyan-400"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-sky-500 hover:bg-sky-400 text-white rounded-lg transition-all disabled:opacity-50"
               >
                 <Send size={18} />
               </button>
