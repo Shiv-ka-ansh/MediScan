@@ -103,7 +103,7 @@ export const Upload = () => {
   };
 
   const removeFile = (indexToRemove) => {
-    setFiles(files.filter((_, i) => i !== indexToRemove));
+    setFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
 
   /* ── Upload ── */
@@ -238,8 +238,12 @@ export const Upload = () => {
                       </div>
                     </div>
                     <button
-                      onClick={() => removeFile(index)}
-                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-900 transition-colors"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-900 transition-colors relative z-20"
                     >
                       <X size={18} />
                     </button>
