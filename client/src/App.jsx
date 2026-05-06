@@ -24,7 +24,12 @@ import { ReferenceValues } from "./pages/ReferenceValues";
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
           <Navbar />
           <Routes>

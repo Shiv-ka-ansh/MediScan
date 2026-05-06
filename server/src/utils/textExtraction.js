@@ -1,51 +1,45 @@
 import pdfParse from 'pdf-parse';
 import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
-import fs from 'fs/promises';
-import https from 'https';
-import http from 'http';
-
 /**
- * Fetch a file from a URL and return it as a Buffer
- * Used for Cloudinary-hosted files
+ * Extract text from a PDF buffer.
+ * @param {Buffer} buffer - The raw PDF file bytes
  */
-async function fetchBufferFromUrl(url) {
-    return new Promise((resolve, reject) => {
-        const client = url.startsWith('https') ? https : http;
-        client.get(url, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => chunks.push(chunk));
-            res.on('end', () => resolve(Buffer.concat(chunks)));
-            res.on('error', reject);
-        }).on('error', reject);
-    });
-}
-
-/**
- * Read file bytes — supports both local path and remote URL
- */
-async function readFileBytes(fileSource) {
-    if (fileSource.startsWith('http://') || fileSource.startsWith('https://')) {
-        return fetchBufferFromUrl(fileSource);
-    }
-    return fs.readFile(fileSource);
-}
-
-export async function extractTextFromPDF(fileSource) {
+export async function extractTextFromPDF(buffer) {
     try {
-        const dataBuffer = await readFileBytes(fileSource);
-        const data = await pdfParse(dataBuffer);
+        if (!buffer || buffer.length === 0) {
+            throw new Error('PDF buffer is empty.');
+        }
+
+        // Quick sanity check: a PDF should start with %PDF
+        const header = buffer.slice(0, 5).toString('ascii');
+        if (!header.startsWith('%PDF')) {
+            console.warn(
+                `[extractTextFromPDF] Buffer does not start with %PDF. ` +
+                `First 50 bytes: ${buffer.slice(0, 50).toString('utf-8')}`
+            );
+        }
+
+        console.log(`[extractTextFromPDF] Parsing ${buffer.length} bytes...`);
+        const data = await pdfParse(buffer);
         return data.text || '';
     } catch (error) {
         console.error('PDF extraction error:', error);
-        throw new Error('Failed to extract text from PDF');
+        throw new Error('Failed to extract text from PDF: ' + error.message);
     }
 }
 
-export async function extractTextFromImage(fileSource) {
+/**
+ * Extract text from an image buffer using OCR.
+ * @param {Buffer} buffer - The raw image file bytes
+ */
+export async function extractTextFromImage(buffer) {
     try {
-        const imageBuffer = await readFileBytes(fileSource);
-        const processedImage = await sharp(imageBuffer)
+        if (!buffer || buffer.length === 0) {
+            throw new Error('Image buffer is empty.');
+        }
+
+        const processedImage = await sharp(buffer)
             .greyscale()
             .normalize()
             .sharpen()
@@ -66,32 +60,39 @@ export async function extractTextFromImage(fileSource) {
     }
 }
 
-export async function extractTextFromFile(fileSource) {
+/**
+ * Extract text from a plain-text file buffer.
+ * @param {Buffer} buffer - The raw text file bytes
+ */
+export async function extractTextFromFile(buffer) {
     try {
-        if (fileSource.startsWith('http://') || fileSource.startsWith('https://')) {
-            const buffer = await fetchBufferFromUrl(fileSource);
-            return buffer.toString('utf-8');
+        if (!buffer || buffer.length === 0) {
+            throw new Error('Text file buffer is empty.');
         }
-        const text = await fs.readFile(fileSource, 'utf-8');
-        return text;
+        return buffer.toString('utf-8');
     } catch (error) {
         console.error('Text file reading error:', error);
         throw new Error('Failed to read text file');
     }
 }
 
-export async function extractTextFromReport(fileSource, fileType) {
+/**
+ * Route to the correct extractor based on file type.
+ * @param {Buffer} buffer   - The raw file bytes (from multer memoryStorage)
+ * @param {string} fileType - One of: pdf, image, jpg, jpeg, png, text, txt
+ */
+export async function extractTextFromReport(buffer, fileType) {
     switch (fileType.toLowerCase()) {
         case 'pdf':
-            return await extractTextFromPDF(fileSource);
+            return await extractTextFromPDF(buffer);
         case 'image':
         case 'jpg':
         case 'jpeg':
         case 'png':
-            return await extractTextFromImage(fileSource);
+            return await extractTextFromImage(buffer);
         case 'text':
         case 'txt':
-            return await extractTextFromFile(fileSource);
+            return await extractTextFromFile(buffer);
         default:
             throw new Error(`Unsupported file type: ${fileType}`);
     }

@@ -122,7 +122,15 @@ export const Upload = () => {
         navigate('/dashboard'); // Go to dashboard to see all uploaded reports
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to upload one or more reports");
+      const serverMsg = err.response?.data?.message;
+      const network =
+        err.code === "ERR_NETWORK" || err.message === "Network Error";
+      setError(
+        serverMsg ||
+          (network
+            ? "Cannot reach the API server. Make sure the backend is running on port 8000 and wait if it is restarting, then try again."
+            : "Failed to upload one or more reports")
+      );
     } finally {
       setLoading(false);
     }

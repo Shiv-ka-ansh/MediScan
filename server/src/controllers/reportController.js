@@ -1,7 +1,7 @@
 import Report from '../models/Report.js';
 import { extractTextFromReport } from '../utils/textExtraction.js';
 import { analyzeReport, translateReport, SUPPORTED_LANGUAGES } from '../utils/aiService.js';
-import { deleteFromCloudinary } from '../utils/cloudinaryService.js';
+import { deleteFromCloudinary, uploadBufferToCloudinary } from '../utils/cloudinaryService.js';
 import path from 'path';
 
 export const uploadReport = async (req, res) => {
@@ -14,11 +14,15 @@ export const uploadReport = async (req, res) => {
 
         const file = req.file;
 
-        // Cloudinary stores the secure URL in file.path and public_id in file.filename
-        const cloudinaryUrl = file.path;
-        const cloudinaryPublicId = file.filename;
+        console.log(`[Upload] File metadata:`, JSON.stringify({
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size,
+            bufferBytes: file.buffer?.length ?? 0,
+        }, null, 2));
 
         const ext = path.extname(file.originalname).slice(1).toLowerCase();
+
         let fileTypeCategory;
         if (ext === 'pdf') {
             fileTypeCategory = 'pdf';
@@ -30,11 +34,12 @@ export const uploadReport = async (req, res) => {
 
         let extractedText = '';
         try {
-            // Pass Cloudinary URL — textExtraction now handles remote URLs
-            extractedText = await extractTextFromReport(cloudinaryUrl, fileTypeCategory);
+            if (!file.buffer || file.buffer.length === 0) {
+                throw new Error('Uploaded file buffer is empty.');
+            }
+            extractedText = await extractTextFromReport(file.buffer, fileTypeCategory);
         } catch (error) {
-            // Clean up Cloudinary file on extraction failure
-            await deleteFromCloudinary(cloudinaryPublicId, fileTypeCategory === 'image' ? 'image' : 'raw').catch(() => {});
+            console.error('[Upload] Text extraction failed:', error);
             res.status(500).json({
                 message: 'Failed to extract text from file',
                 error: error.message,
@@ -43,7 +48,6 @@ export const uploadReport = async (req, res) => {
         }
 
         if (!extractedText || extractedText.trim().length === 0) {
-            await deleteFromCloudinary(cloudinaryPublicId, fileTypeCategory === 'image' ? 'image' : 'raw').catch(() => {});
             res.status(400).json({
                 message: 'Could not extract text from file. Please ensure the file contains readable text.',
             });
@@ -57,9 +61,6 @@ export const uploadReport = async (req, res) => {
             console.log('AI Analysis Completed Successfully');
         } catch (error) {
             console.error('AI Analysis Error:', error.message);
-            
-            // Clean up Cloudinary file on AI failure
-            await deleteFromCloudinary(cloudinaryPublicId, fileTypeCategory === 'image' ? 'image' : 'raw').catch(() => {});
 
             // If it's a validation error (not a medical report), return 400
             if (error.message.includes('not a valid medical report') || error.message.includes('not appear to be a medical report')) {
@@ -75,11 +76,26 @@ export const uploadReport = async (req, res) => {
             return;
         }
 
+        let cloudinaryUrl;
+        let cloudinaryPublicId;
+        try {
+            const uploaded = await uploadBufferToCloudinary(file.buffer, fileTypeCategory);
+            cloudinaryUrl = uploaded.secure_url;
+            cloudinaryPublicId = uploaded.public_id;
+        } catch (uploadErr) {
+            console.error('Cloudinary upload error:', uploadErr);
+            res.status(500).json({
+                message: 'Analysis succeeded but storing the file failed. Please try again.',
+                error: uploadErr.message,
+            });
+            return;
+        }
+
         const report = await Report.create({
             userId: req.user._id,
             fileName: file.originalname,
-            filePath: cloudinaryUrl,       // Cloudinary secure URL
-            cloudinaryPublicId,            // Saved for future deletion
+            filePath: cloudinaryUrl,
+            cloudinaryPublicId,
             fileType: fileTypeCategory,
             extractedText: extractedText,
             aiSummary: aiAnalysis.summary,

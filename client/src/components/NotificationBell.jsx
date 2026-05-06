@@ -35,46 +35,50 @@ export const NotificationBell = () => {
 
     fetchNotifications();
 
-    // Setup socket connection with error handling
     const token = localStorage.getItem("token");
     let socket = null;
+    let connectTimer = null;
 
-    try {
-      socket = io(
-        import.meta.env.VITE_API_URL?.replace("/api", "") ||
-          "http://localhost:8000",
-        {
-          auth: { token },
-          reconnectionAttempts: 3, // Limit reconnection attempts
-          reconnectionDelay: 2000,
-          timeout: 5000,
-          transports: ["websocket", "polling"],
-        }
-      );
+    // Defer connect to the next macrotask so React 18 StrictMode's
+    // mount/unmount/remount clears the timer once and avoids aborting WS mid-handshake.
+    connectTimer = setTimeout(() => {
+      connectTimer = null;
+      try {
+        socket = io(
+          import.meta.env.VITE_API_URL?.replace("/api", "") ||
+            "http://localhost:8000",
+          {
+            auth: { token },
+            reconnectionAttempts: 10,
+            reconnectionDelay: 1000,
+            timeout: 10000,
+            transports: ["websocket", "polling"],
+          }
+        );
 
-      socket.on("notification", (notification) => {
-        setNotifications((prev) => [notification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-      });
+        socket.on("notification", (notification) => {
+          setNotifications((prev) => [notification, ...prev]);
+          setUnreadCount((prev) => prev + 1);
+        });
 
-      socket.on("connect_error", (error) => {
-        // Silently handle connection errors - server may not support sockets
+        socket.on("connect_error", () => {
+          if (import.meta.env.DEV) {
+            console.warn(
+              "Socket connection failed, notifications may be delayed"
+            );
+          }
+        });
+      } catch {
         if (import.meta.env.DEV) {
-          console.warn(
-            "Socket connection failed, notifications may be delayed"
-          );
+          console.warn("Socket.io not available");
         }
-        // Disconnect to prevent further reconnection attempts
-        socket.disconnect();
-      });
-    } catch (error) {
-      // Socket initialization failed, continue without real-time updates
-      if (import.meta.env.DEV) {
-        console.warn("Socket.io not available");
       }
-    }
+    }, 0);
 
     return () => {
+      if (connectTimer != null) {
+        clearTimeout(connectTimer);
+      }
       if (socket) {
         socket.disconnect();
       }

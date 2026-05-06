@@ -33,4 +33,36 @@ export async function getSignedUrl(publicId, resourceType = 'raw') {
     });
 }
 
+/**
+ * Upload a multer memory buffer to Cloudinary after local processing succeeds.
+ * @param {Buffer} buffer
+ * @param {'pdf' | 'image' | 'text'} fileTypeCategory
+ */
+export function uploadBufferToCloudinary(buffer, fileTypeCategory) {
+    const resourceType =
+        fileTypeCategory === 'image' ? 'image' : 'raw';
+
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'mediscan-reports',
+                resource_type: resourceType,
+                use_filename: true,
+                unique_filename: true,
+            },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve({
+                    secure_url: result.secure_url,
+                    public_id: result.public_id,
+                });
+            }
+        );
+        uploadStream.end(buffer);
+    });
+}
+
 export default cloudinary;

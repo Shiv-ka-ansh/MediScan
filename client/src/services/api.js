@@ -26,11 +26,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        const isNetwork =
+            error.code === 'ERR_NETWORK' || error.message === 'Network Error';
         console.error('API Error:', {
             url: error.config?.url,
             method: error.config?.method,
             status: error.response?.status,
-            message: error.response?.data?.message || error.message,
+            message:
+                error.response?.data?.message ||
+                (isNetwork
+                    ? 'Network error (is the backend running?)'
+                    : error.message),
         });
 
         if (error.response?.status === 401) {
